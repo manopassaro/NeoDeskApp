@@ -28,3 +28,24 @@ export async function createUsuario(nome: string, email: string, senha: string) 
     throw err;
   }
 }
+
+export async function loginUsuario(email: string, senha: string) {
+    try {
+    const response = await fetch(`${API_URL}/usuarios/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, senha })
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || "Erro no login");
+    }
+
+    const data = await response.json(); // aqui a API retorna { message, user }
+    return data;
+  } catch (err) {
+    console.error("Erro ao logar:", err);
+    throw err;
+  }
+}

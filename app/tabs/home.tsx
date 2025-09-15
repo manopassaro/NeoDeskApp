@@ -1,4 +1,4 @@
-import { View, Text, Button } from 'react-native'
+import { View, Text } from 'react-native'
 import { useRouter } from "expo-router";
 import React from 'react'
 import  CustomButton  from "../../assets/components/customButton";
@@ -9,7 +9,7 @@ const home = () => {
   return (
     <View>
       <Text>home</Text>
-      <CustomButton title="Voltar" onPress={() => router.back()} />
+      <CustomButton title="Logout" onPress={() => router.push("/auth")} />
     </View>
   )
 }
