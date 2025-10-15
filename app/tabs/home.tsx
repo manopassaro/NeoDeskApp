@@ -1,17 +1,262 @@
-import { View, Text } from 'react-native'
+import React, { useState } from "react";
+import { View, Text, FlatList, TouchableOpacity, Image, Alert } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Modal from "react-native-modal";
 import { useRouter } from "expo-router";
-import React from 'react'
-import  CustomButton  from "../../assets/components/customButton";
+import { Ionicons } from "@expo/vector-icons";
+import { scale, verticalScale, moderateScale } from "react-native-size-matters";
 
-const home = () => {
 
-    const router = useRouter()
+export default function Home() {
+  const router = useRouter();
+
+  // Dados de exemplo para os chamados
+  const [chamados] = useState([
+    { id: "1", titulo: "Erro ao logar no sistema", status: "Aberto" },
+    { id: "2", titulo: "Falha na impressão de relatórios", status: "Em andamento" },
+    { id: "3", titulo: "Sistema travando ao iniciar", status: "Fechado" },
+  ]);
+
+  // Menu do Perfil
+  const [menuPerfil, setMenuPerfil] = useState(false);
+
+  // Menu da Barra de Funcionalidades
+  const [menuBarra, setMenuBarra] = useState(false);
+
+
+  // Funções que abrirão os menus
+  const abrirPerfil = () => {
+    setMenuPerfil(true);
+    console.log("Abrindo informações do perfil...");
+  };
+
+  const abrirFuncionalidades = () => {
+    setMenuBarra(true);
+    console.log("Abrindo lista de funcionalidades...");
+  };
+
+  // Renderiza cada chamado
+  const renderChamado = ({ item }: any) => (
+    <TouchableOpacity
+      onPress={() => console.log(`Abrindo chamado ${item.id}`)}
+      style={{
+        padding: 16,
+        borderBottomWidth: 1,
+        borderColor: "#ccc",
+      }}
+    >
+      <Text style={{ fontWeight: "bold" }}>{item.titulo}</Text>
+      <Text>Status: {item.status}</Text>
+    </TouchableOpacity>
+  );
+
+
+  // Confirmação de Logout
+
+  const [confirmVisible, setConfirmVisible] = useState(false);
+
+  const handleLogout = () => {
+    // Fecha o menu
+    setMenuPerfil(false);
+    // Mostra modal de confirmação
+    setConfirmVisible(true);
+  };
+
+  const confirmLogout = () => {
+    setConfirmVisible(false);
+    router.replace("../auth"); // volta pro login
+  };
+
+
   return (
-    <View>
-      <Text>home</Text>
-      <CustomButton title="Logout" onPress={() => router.push("../auth")} />
-    </View>
-  )
-}
+    <SafeAreaView style={{ flex: 1 }}>
+      {/* Header */}
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          paddingHorizontal: scale(16),
+          paddingVertical: verticalScale(10),
+          borderBottomWidth: scale(1),
+          borderColor: "#ddd",
+        }}
+      >
+        {/* Ícone esquerdo - Perfil */}
+        <TouchableOpacity onPress={abrirPerfil}>
+          <Ionicons name="person-circle-outline" size={scale(45)} color="black" />
+        </TouchableOpacity>
 
-export default home
+        <Modal
+        isVisible={menuPerfil}
+        animationIn="slideInLeft"   // desliza da esquerda
+        animationOut="slideOutLeft" // fecha deslizando para a esquerda
+        onBackdropPress={() => setMenuPerfil(false)} // fecha ao tocar fora
+        style={{ margin: 0, justifyContent: "flex-start", alignItems: "flex-start" }}
+      >
+        <View
+          style={{
+            width: scale(250),
+            height: "100%",
+            backgroundColor: "#fff",
+            padding: scale(20),
+          }}
+        >
+          <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+      <Ionicons
+        onPress={() => setMenuPerfil(false)}
+        name="person-circle-outline"
+        size={scale(45)}
+        color="black"
+      />
+    </View>
+          <Text>NOME</Text>
+          <Text>EMAIL</Text>
+          <Text>NÍVEL</Text>
+        </View>
+      </Modal>
+
+
+        {/* LOGO DO APP */}
+        <Image
+        style={{ alignItems: "center", 
+          justifyContent: "center", 
+          flex: 1
+         }}
+        source={require("../../assets/images/logo.png")}
+        resizeMode="contain"
+      />
+
+
+        {/* Ícone direito - Funcionalidades */}
+        <TouchableOpacity onPress={abrirFuncionalidades}>
+          <Ionicons name="menu-outline" size={scale(40)} color="black" />
+        </TouchableOpacity>
+      </View>
+
+         <Modal
+        isVisible={menuBarra}
+        animationIn="slideInRight"   // desliza da direita
+        animationOut="slideOutRight" // fecha deslizando pra direita
+        onBackdropPress={() => setMenuBarra(false)} // fecha ao tocar fora
+        style={{ margin: 0, justifyContent: "flex-start", alignItems: "flex-end" }}
+      >
+        <View
+          style={{
+            width: scale(250),
+            height: "100%",
+            backgroundColor: "#fff",
+            padding: scale(20),
+          }}
+        >
+          <Ionicons 
+            onPress={() => setMenuBarra(false)}
+            name="menu-outline" 
+            size={scale(40)} 
+            color="black" />
+          <TouchableOpacity
+          onPress={handleLogout}
+          style={{
+            marginTop: verticalScale(30),
+            paddingVertical: verticalScale(10),
+            paddingHorizontal: scale(15),
+            backgroundColor: "#DC2626",
+            borderRadius: scale(8),
+          }}
+        >
+          <Text style={{ color: "#fff", fontSize: moderateScale(16), fontWeight: "bold" }}>
+            Logout
+          </Text>
+        </TouchableOpacity>
+        </View>
+      </Modal>
+
+      {/* Confirmação de Logout */}
+
+      <Modal
+        isVisible={confirmVisible}
+        animationIn="zoomIn"
+        animationOut="zoomOut"
+        onBackdropPress={() => setConfirmVisible(false)}
+        backdropOpacity={0.5}
+      >
+        <View
+          style={{
+            backgroundColor: "#fff",
+            padding: scale(20),
+            borderRadius: scale(15),
+            alignItems: "center",
+          }}
+        >
+          <Text style={{ fontSize: moderateScale(16), marginBottom: verticalScale(15) }}>
+            Tem certeza que deseja sair do sistema?
+          </Text>
+
+          <View style={{ flexDirection: "row", justifyContent: "space-between", width: "100%" }}>
+            <TouchableOpacity
+              onPress={() => setConfirmVisible(false)}
+              style={{
+                flex: 1,
+                marginRight: scale(10),
+                paddingVertical: verticalScale(10),
+                backgroundColor: "#ccc",
+                borderRadius: scale(10),
+                alignItems: "center",
+              }}
+            >
+              <Text>Cancelar</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={confirmLogout}
+              style={{
+                flex: 1,
+                marginLeft: scale(10),
+                paddingVertical: verticalScale(10),
+                backgroundColor: "#DC2626",
+                borderRadius: scale(10),
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ color: "#fff" }}>Sim</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+
+
+      {/* Lista de chamados */}
+      <FlatList
+        data={chamados}
+        keyExtractor={(item) => item.id}
+        renderItem={renderChamado}
+        contentContainerStyle={{ flexGrow: 1 }}
+      />
+
+      {/* Barra inferior */}
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-around",
+          alignItems: "center",
+          paddingVertical: verticalScale(10),
+          borderTopWidth: scale(1),
+          borderColor: "#ddd",
+        }}
+      >
+        <TouchableOpacity onPress={() => router.push("/home")}>
+          <Ionicons name="home-outline" size={scale(26)} color="black" />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => router.push("/chamados")}>
+          <Ionicons name="list-outline" size={scale(26)} color="black" />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => router.push("/configuracoes")}>
+          <Ionicons name="settings-outline" size={scale(26)} color="black" />
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
+  );
+}

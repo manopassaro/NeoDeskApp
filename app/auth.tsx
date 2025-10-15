@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Text, View, TouchableOpacity, SafeAreaView, Alert } from "react-native";
+import { Text, View, TouchableOpacity, Alert } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import CustomInput from "../assets/components/customInput";
 import { globalStyles } from "../assets/styles/globalStyles";
@@ -10,15 +11,6 @@ export default function Index() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
 
-  const handleLogin = async () => {
-    try {
-      const data = await loginUsuario(email, senha);
-      Alert.alert("Sucesso", data.message);
-      router.push("/tabs/home"); // navega para Home
-    } catch (err: any) {
-      Alert.alert("Erro", err.message || "Falha no login");
-    }
-  };
 
 
   return (
