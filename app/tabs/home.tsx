@@ -9,7 +9,7 @@ const home = () => {
   return (
     <View>
       <Text>home</Text>
-      <CustomButton title="Logout" onPress={() => router.push("/auth")} />
+      <CustomButton title="Logout" onPress={() => router.push("../auth")} />
     </View>
   )
 }

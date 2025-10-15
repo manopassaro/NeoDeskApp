@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { Text, View, TouchableOpacity, SafeAreaView, Alert } from "react-native";
 import { useRouter } from "expo-router";
-import CustomInput from "../../assets/components/customInput";
-import { globalStyles } from "../../assets/styles/globalStyles";
-import { loginUsuario } from // caminho da api
+import CustomInput from "../assets/components/customInput";
+import { globalStyles } from "../assets/styles/globalStyles";
 
 
 export default function Index() {
@@ -20,7 +19,7 @@ export default function Index() {
       Alert.alert("Erro", err.message || "Falha no login");
     }
   };
-}
+
 
   return (
     <SafeAreaView style={globalStyles.container}> 
@@ -32,13 +31,13 @@ export default function Index() {
       
       
 
-       <TouchableOpacity style={globalStyles.button} onPress={handleLogin}>
+       <TouchableOpacity style={globalStyles.button} onPress={() => router.push("/tabs/home")}>
           <Text style={globalStyles.buttonText}>Login</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={globalStyles.button} onPress={() => router.push("/auth/signUp")}>
+        {/* <TouchableOpacity style={globalStyles.button} onPress={() => router.push("/auth/signUp")}>
           <Text style={globalStyles.buttonText}>Cadastrar</Text>
-        </TouchableOpacity> 
+        </TouchableOpacity>  */}
       </View>
     </SafeAreaView>
   );
