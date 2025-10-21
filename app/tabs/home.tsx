@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, FlatList, TouchableOpacity, Image, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Modal from "react-native-modal";
@@ -6,16 +6,21 @@ import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { scale, verticalScale, moderateScale } from "react-native-size-matters";
 
+import { globalStyles } from "../../assets/styles/globalStyles";
+import { Chamado } from "../../assets/components/chamado";
+import { useProductDatabase, ProductDatabase } from "../../services/chamadoDb";
+
+
 
 export default function Home() {
   const router = useRouter();
+  const ProductDatabase = useProductDatabase();
 
-  // Dados de exemplo para os chamados
-  const [chamados] = useState([
-    { id: "1", titulo: "Erro ao logar no sistema", status: "Aberto" },
-    { id: "2", titulo: "Falha na impressão de relatórios", status: "Em andamento" },
-    { id: "3", titulo: "Sistema travando ao iniciar", status: "Fechado" },
-  ]);
+  const [search, setSearch] = useState('');
+  const [chamados, setChamados] = useState<ProductDatabase[]>([]);
+  
+  
+
 
   // Menu do Perfil
   const [menuPerfil, setMenuPerfil] = useState(false);
@@ -36,19 +41,21 @@ export default function Home() {
   };
 
   // Renderiza cada chamado
-  const renderChamado = ({ item }: any) => (
-    <TouchableOpacity
-      onPress={() => console.log(`Abrindo chamado ${item.id}`)}
-      style={{
-        padding: 16,
-        borderBottomWidth: 1,
-        borderColor: "#ccc",
-      }}
-    >
-      <Text style={{ fontWeight: "bold" }}>{item.titulo}</Text>
-      <Text>Status: {item.status}</Text>
-    </TouchableOpacity>
-  );
+  
+  async function list(){
+    try {
+      const response = await ProductDatabase.getAll(search);
+      setChamados(response)
+    } catch (error) {
+      throw(error)
+    } 
+  }
+
+  useEffect(()=>{
+    list()
+  },[search])
+  
+ 
 
 
   // Confirmação de Logout
@@ -76,10 +83,12 @@ export default function Home() {
           flexDirection: "row",
           justifyContent: "space-between",
           alignItems: "center",
+          backgroundColor: "#F2F2F2",
           paddingHorizontal: scale(16),
           paddingVertical: verticalScale(10),
           borderBottomWidth: scale(1),
-          borderColor: "#ddd",
+          borderColor: "#cacacaff",
+          borderRadius: scale(2)
         }}
       >
         {/* Ícone esquerdo - Perfil */}
@@ -227,12 +236,17 @@ export default function Home() {
 
 
       {/* Lista de chamados */}
+      <View style={globalStyles.container}>
+
       <FlatList
         data={chamados}
-        keyExtractor={(item) => item.id}
-        renderItem={renderChamado}
+        keyExtractor={(item) => String(item.id)}
+        renderItem={({item})=><Chamado data={item}/>}
         contentContainerStyle={{ flexGrow: 1 }}
-      />
+        />
+
+      </View>
+
 
       {/* Barra inferior */}
       <View
@@ -249,9 +263,9 @@ export default function Home() {
           <Ionicons name="home-outline" size={scale(26)} color="black" />
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => router.push("/chamados")}>
-          <Ionicons name="list-outline" size={scale(26)} color="black" />
-        </TouchableOpacity>
+        <TouchableOpacity style={globalStyles.create} onPress={() => router.push("/tabs/create")} activeOpacity={0.8}>
+        <Ionicons name="add" size={28} color="#fff" />
+      </TouchableOpacity>
 
         <TouchableOpacity onPress={() => router.push("/configuracoes")}>
           <Ionicons name="settings-outline" size={scale(26)} color="black" />

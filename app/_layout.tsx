@@ -1,6 +1,12 @@
 // import { SafeAreaView } from "react-native-safe-area-context";
 import { Stack } from "expo-router";
+import { SQLiteProvider } from "expo-sqlite"
+import { initializeDatabase } from "../services/neodb"
 
 export default function RootLayout() {
-  return <Stack screenOptions={{ headerShown: false}}/>;
+  return (
+    <SQLiteProvider databaseName="neo.db" onInit={initializeDatabase}>
+      <Stack screenOptions={{ headerShown: false}}/>
+    </SQLiteProvider>
+);
 }
