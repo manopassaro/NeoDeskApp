@@ -8,16 +8,16 @@ import { scale, verticalScale, moderateScale } from "react-native-size-matters";
 
 import { globalStyles } from "../../assets/styles/globalStyles";
 import { Chamado } from "../../assets/components/chamado";
-import { useProductDatabase, ProductDatabase } from "../../services/chamadoDb";
+import { useChamadoDatabase, ChamadoDatabase } from "../../services/chamadoDb";
 
 
 
 export default function Home() {
   const router = useRouter();
-  const ProductDatabase = useProductDatabase();
+  const ProductDatabase = useChamadoDatabase();
 
   const [search, setSearch] = useState('');
-  const [chamados, setChamados] = useState<ProductDatabase[]>([]);
+  const [chamados, setChamados] = useState<ChamadoDatabase[]>([]);
   
   
 

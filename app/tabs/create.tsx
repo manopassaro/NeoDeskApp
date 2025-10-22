@@ -6,13 +6,13 @@ import Modal from "react-native-modal";
 import { Ionicons } from "@expo/vector-icons";
 import { scale, verticalScale, moderateScale } from "react-native-size-matters";
 
-import { useProductDatabase } from "../../services/chamadoDb";
+import { useChamadoDatabase } from "../../services/chamadoDb";
 import { globalStyles } from "../../assets/styles/globalStyles";
 
 
 export default function Create() {
   const router = useRouter();
-  const ProductDatabase = useProductDatabase();
+  const ChamadoDatabase = useChamadoDatabase();
 
 //   const [chamados, setChamados] = useState([]);
 
@@ -22,7 +22,7 @@ export default function Create() {
   const [status, setStatus] = useState('');
 
     async function create() {
-       const response = await ProductDatabase.create({titulo, descricao, status})
+       const response = await ChamadoDatabase.create({titulo, descricao, status})
        Alert.alert("Chamado cadastrado: " + response.insertedRowId)
     }
 

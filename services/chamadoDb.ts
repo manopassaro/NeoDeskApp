@@ -1,16 +1,16 @@
 import { useSQLiteContext } from "expo-sqlite"
 
-export type ProductDatabase = {
+export type ChamadoDatabase = {
     id: number,
     titulo: string
     descricao: string,
     status: string
 }
 
-export function useProductDatabase(){
+export function useChamadoDatabase(){
     const database = useSQLiteContext();
 
-    async function create(data: Omit<ProductDatabase, "id">) {
+    async function create(data: Omit<ChamadoDatabase, "id">) {
         const statement = await database.prepareAsync(
         "INSERT INTO chamados (titulo, descricao, status) VALUES ($titulo, $descricao, $status)"
         )
@@ -34,7 +34,7 @@ export function useProductDatabase(){
         try{
             const query = "SELECT * FROM chamados WHERE titulo LIKE ?"
         
-            const response = await database.getAllAsync<ProductDatabase>(query, `%${search}`)
+            const response = await database.getAllAsync<ChamadoDatabase>(query, `%${search}`)
             return (response)
         }catch(error){
             throw(error)
