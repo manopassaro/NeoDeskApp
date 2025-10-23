@@ -6,20 +6,13 @@ type Props = PressableProps & {
         titulo: string
         descricao: string
         status: string
+        usuario_id: number
     }
 }
 
 
 export function Chamado({data, ...rest}: Props){
-    // return (<Pressable{...rest}>
-    //     <View style={globalStyles.card}>
-    //     <Text>{data.titulo}</Text>
-    //     <Text>{data.descricao}</Text>
-    //     <Text>{data.status}</Text>
-    //     <Text>merda</Text>
-    //     </View>
-    // </Pressable>
-    // )
+    
     return (
     <Pressable {...rest} style={({ pressed }) => [globalStyles.containerChamado, pressed && globalStyles.pressed]}>
       <View style={globalStyles.card}>
@@ -27,6 +20,11 @@ export function Chamado({data, ...rest}: Props){
           <Text style={globalStyles.titleChamado} numberOfLines={1}>
             {data.titulo}
           </Text>
+
+          <Text style={globalStyles.titleChamado} numberOfLines={1}>
+            {data.usuario_id}
+          </Text>
+
           <Text
             style={[
               globalStyles.status,

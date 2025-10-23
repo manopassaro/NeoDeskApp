@@ -4,7 +4,8 @@ export type ChamadoDatabase = {
     id: number,
     titulo: string
     descricao: string,
-    status: string
+    status: string,
+    usuario_id: number
 }
 
 export function useChamadoDatabase(){
@@ -12,13 +13,14 @@ export function useChamadoDatabase(){
 
     async function create(data: Omit<ChamadoDatabase, "id">) {
         const statement = await database.prepareAsync(
-        "INSERT INTO chamados (titulo, descricao, status) VALUES ($titulo, $descricao, $status)"
+        "INSERT INTO chamados (titulo, descricao, status, usuario_id) VALUES ($titulo, $descricao, $status, $usuario_id)"
         )
         try {
             const result = await statement.executeAsync({
                 $titulo: data.titulo,
                 $descricao: data.descricao,
-                $status: data.status
+                $status: data.status,
+                $usuario_id: data.usuario_id
             })
 
             const insertedRowId = result.lastInsertRowId.toLocaleString();

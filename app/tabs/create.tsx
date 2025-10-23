@@ -5,6 +5,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Modal from "react-native-modal";
 import { Ionicons } from "@expo/vector-icons";
 import { scale, verticalScale, moderateScale } from "react-native-size-matters";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 import { useChamadoDatabase } from "../../services/chamadoDb";
 import { globalStyles } from "../../assets/styles/globalStyles";
@@ -22,8 +24,22 @@ export default function Create() {
   const [status, setStatus] = useState('');
 
     async function create() {
-       const response = await ChamadoDatabase.create({titulo, descricao, status})
-       Alert.alert("Chamado cadastrado: " + response.insertedRowId)
+      const userString = await AsyncStorage.getItem("user");
+      const user = userString ? JSON.parse(userString) : null;
+
+      if (!user) {
+        Alert.alert("Erro", "Usuário não autenticado!");
+        return;
+  }
+
+      const response = await ChamadoDatabase.create({
+        titulo, 
+        descricao, 
+        status, 
+        usuario_id: user.id})
+      Alert.alert("Chamado cadastrado: " + response.insertedRowId);
+      console.log(user.id);
+      
     }
 
 

@@ -11,8 +11,6 @@ export async function initializeDatabase (database: SQLiteDatabase) {
       is_active INTEGER DEFAULT 1
     );
 
-      INSERT OR IGNORE INTO usuarios (id, nome, email, senha)
-        VALUES (1, 'Admin', 'admin@teste.com', '1234');
 
       CREATE TABLE IF NOT EXISTS chamados (
         id INTEGER PRIMARY KEY AUTOINCREMENT,

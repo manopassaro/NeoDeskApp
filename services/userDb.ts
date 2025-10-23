@@ -1,5 +1,5 @@
 import { useSQLiteContext } from "expo-sqlite";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 
 export type UserDatabase = {
   id: number;
@@ -12,6 +12,7 @@ export type UserDatabase = {
 
 export function useUserDatabase() {
   const database = useSQLiteContext();
+  const router = useRouter();
 
   // Criar usuário (para cadastro inicial)
   async function createUser(data: Omit<UserDatabase, "id" >) {
@@ -55,57 +56,68 @@ export function useUserDatabase() {
 
   // Função de login
   async function login(data: Omit<UserDatabase, "id">) {
-  try {
+    try {
+    // 🔍 Busca o usuário pelo email
     const query = `
       SELECT * FROM usuarios
-      WHERE email = ? AND senha = ? AND is_active = 1
+      WHERE email = ?
       LIMIT 1;
     `;
 
-    // ⚠️ parâmetros separados, não em array!
-    const result = await database.getFirstAsync<UserDatabase>(query, [data.email, data.senha]);
+    const user = await database.getFirstAsync<UserDatabase>(query, [data.email]);
 
-    if (result) {
-      console.log("✅ Login bem-sucedido:", result);
-      return result;
-    } else {
-      console.log("❌ Usuário não encontrado ou inativo", result, `%${data.senha}`);
-      return null;
+    // usuário existe?
+    if (!user) {
+      throw new Error("Usuário não encontrado");
     }
-  } catch (error) {
-    console.error("Erro no login:", error);
+
+    // usuário tá ativo?
+    if (user.is_active !== 1) {
+      throw new Error("Usuário inativo");
+    }
+
+    // senha correta?
+    if (user.senha !== data.senha) {
+      throw new Error("Senha incorreta");
+    }
+
+    // ok...
+    console.log("✅ Login bem-sucedido:", user);
+    router.push("/tabs/home");
+    return user;
+
+  } catch (error: any) {
+    // 🎯tratamento de erros
+    console.log("Erro no login:", error.message);
+
+    // Você pode optar por lançar o erro novamente para tratar no front
     throw error;
   }
+
+
+  // try {
+  //   const query = `
+  //     SELECT * FROM usuarios
+  //     WHERE email = ? AND senha = ? AND is_active = 1
+  //     LIMIT 1;
+  //   `;
+
+  //   const result = await database.getFirstAsync<UserDatabase>(query, [data.email, data.senha]);
+
+  //   if (result) {
+  //     console.log("✅ Login bem-sucedido:", result);
+  //     router.push("/tabs/home");
+  //     return result;
+  //   } else {
+  //     console.log("❌ Usuário não encontrado ou inativo", result, `%${data.senha}`);
+  //     return null;
+  //   }
+  // } catch (error) {
+  //   console.error("Erro no login:", error);
+  //   throw error;
+  // }
 }
 
-
-//     async function login(email: string, senha: string) {
-//     try {
-//       // Consulta o usuário com o email informado
-//       const query = "SELECT * FROM usuarios WHERE email = ?";
-//       const users = await database.getAllAsync(query, `%${email}`);
-
-//       if (users.length === 0) {
-//         throw new Error("Usuário não encontrado");
-//       }
-
-//       const user = users[0];
-
-//       // Aqui seria feita a verificação de senha real (ex: bcrypt)
-//       // Por simplicidade, estamos comparando diretamente
-//       if (user.senha !== senha) {
-//         throw new Error("Senha incorreta");
-//       }
-
-//       // ✅ LOGIN BEM-SUCEDIDO → redireciona para tela principal
-//       router.push("/tabs/home");
-
-//       return user; // opcional, caso queira usar o retorno
-//     } catch (error) {
-//       console.error("Erro no login:", error);
-//       throw error;
-//     }
-//   }
 
   return { createUser, login, getAllUsers };
 }
