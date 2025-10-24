@@ -1,6 +1,7 @@
 import { useSQLiteContext } from "expo-sqlite";
 import { useRouter } from "expo-router";
 
+
 export type UserDatabase = {
   id: number;
   nome: string;
@@ -82,42 +83,32 @@ export function useUserDatabase() {
     }
 
     // ok...
-    console.log("✅ Login bem-sucedido:", user);
+    console.log("Login bem-sucedido:", user);
     router.push("/tabs/home");
     return user;
 
   } catch (error: any) {
-    // 🎯tratamento de erros
+    // tratamento de erros
     console.log("Erro no login:", error.message);
 
     // Você pode optar por lançar o erro novamente para tratar no front
     throw error;
   }
 
+  }
 
-  // try {
-  //   const query = `
-  //     SELECT * FROM usuarios
-  //     WHERE email = ? AND senha = ? AND is_active = 1
-  //     LIMIT 1;
-  //   `;
-
-  //   const result = await database.getFirstAsync<UserDatabase>(query, [data.email, data.senha]);
-
-  //   if (result) {
-  //     console.log("✅ Login bem-sucedido:", result);
-  //     router.push("/tabs/home");
-  //     return result;
-  //   } else {
-  //     console.log("❌ Usuário não encontrado ou inativo", result, `%${data.senha}`);
-  //     return null;
-  //   }
-  // } catch (error) {
-  //   console.error("Erro no login:", error);
-  //   throw error;
-  // }
-}
+  async function getUserById(id: number) {
+    
+    try {
+      const query = "SELECT * FROM usuarios WHERE id = ? LIMIT 1"  
+      const statement = await database.getAllAsync(query, [id]);
+      const user = statement[0]
+      return user; 
+    } catch(error) {
+            throw error
+      }
+  }
 
 
-  return { createUser, login, getAllUsers };
+  return { createUser, login, getAllUsers, getUserById };
 }

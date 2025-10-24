@@ -7,7 +7,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { scale, verticalScale, moderateScale } from "react-native-size-matters";
 
 import { globalStyles } from "../../assets/styles/globalStyles";
-import { Chamado } from "../../assets/components/chamado";
+import { Chamados } from "../../assets/components/chamado";
 import { useChamadoDatabase, ChamadoDatabase } from "../../services/chamadoDb";
 
 
@@ -19,8 +19,6 @@ export default function Home() {
   const [search, setSearch] = useState('');
   const [chamados, setChamados] = useState<ChamadoDatabase[]>([]);
   
-  
-
 
   // Menu do Perfil
   const [menuPerfil, setMenuPerfil] = useState(false);
@@ -241,7 +239,7 @@ export default function Home() {
       <FlatList
         data={chamados}
         keyExtractor={(item) => String(item.id)}
-        renderItem={({item})=><Chamado data={item}/>}
+        renderItem={({item})=><Chamados data={item}/>}
         contentContainerStyle={{ flexGrow: 1 }}
         />
 

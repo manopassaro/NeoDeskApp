@@ -39,7 +39,7 @@ export default function Create() {
         usuario_id: user.id})
       Alert.alert("Chamado cadastrado: " + response.insertedRowId);
       console.log(user.id);
-      
+
     }
 
 
@@ -61,27 +61,27 @@ export default function Create() {
             borderRadius: scale(2)
           }}
     >
-  {/* Botão de Voltar */}
-  <TouchableOpacity style={globalStyles.back} onPress={() => router.back()}>
-    <Ionicons name="arrow-back" size={24} color="#686868ff" />
-  </TouchableOpacity>
+      {/* Botão de Voltar */}
+      <TouchableOpacity style={globalStyles.back} onPress={() => router.back()}>
+        <Ionicons name="arrow-back" size={24} color="#686868ff" />
+      </TouchableOpacity>
 
-  {/* Container central pra alinhar a logo */}
+      {/* Container central pra alinhar a logo */}
 
-    <Image
-      // style={{
-      //   height: verticalScale(35),
-      //   width: "60%",
-      // }}
-      source={require("../../assets/images/logo.png")}
-      resizeMode="contain"
-    />
+      <Image
+          // style={{
+          //   height: verticalScale(35),
+          //   width: "60%",
+          // }}
+        source={require("../../assets/images/logo.png")}
+        resizeMode="contain"
+      />
  
 
-  {/* Espaço “falso” pra balancear o layout */}
-  <View style={{ width: 32 }} /> 
+      {/* Espaço “falso” pra balancear o layout */}
+      <View style={{ width: 32 }} /> 
   
-</View>
+      </View>
 
 
     <View style={{ flex: 1, padding: 20, backgroundColor: '#f2f2f2' }}>

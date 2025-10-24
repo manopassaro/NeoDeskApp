@@ -1,4 +1,5 @@
 import { useSQLiteContext } from "expo-sqlite"
+import { useUserDatabase } from "./userDb";
 
 export type ChamadoDatabase = {
     id: number,
@@ -10,10 +11,11 @@ export type ChamadoDatabase = {
 
 export function useChamadoDatabase(){
     const database = useSQLiteContext();
+    const UserDatabase = useUserDatabase();
 
     async function create(data: Omit<ChamadoDatabase, "id">) {
         const statement = await database.prepareAsync(
-        "INSERT INTO chamados (titulo, descricao, status, usuario_id) VALUES ($titulo, $descricao, $status, $usuario_id)"
+            "INSERT INTO chamados (titulo, descricao, status, usuario_id) VALUES ($titulo, $descricao, $status, $usuario_id)"
         )
         try {
             const result = await statement.executeAsync({
@@ -41,7 +43,25 @@ export function useChamadoDatabase(){
         }catch(error){
             throw(error)
         }
-}
+    }
 
-    return { create, getAll }
+    async function getById(id: number) {
+        
+
+        try {
+            const query = "SELECT * FROM chamados WHERE id = ? LIMIT 1"
+            const statement = await database.getFirstAsync(query, [id]);
+
+            let usuarioNome: string | null = null;
+            const usuario = await UserDatabase.getUserById(statement.usuario_id);
+            usuarioNome = usuario?.nome ?? null;
+
+            console.log(usuarioNome);
+            return {statement, usuarioNome};
+        } catch(error) {
+            throw error
+        }
+    }
+
+    return { create, getAll, getById }
 }
