@@ -103,6 +103,7 @@ export function useUserDatabase() {
       const query = "SELECT * FROM usuarios WHERE id = ? LIMIT 1"  
       const statement = await database.getAllAsync(query, [id]);
       const user = statement[0]
+      // console.log("user"+user);
       return user; 
     } catch(error) {
             throw error

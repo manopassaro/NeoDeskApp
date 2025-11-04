@@ -13,6 +13,7 @@ export default function Index() {
   const router = useRouter();
   const UserDatabase = useUserDatabase();
 
+  // const [user, setUser] = useState(null);
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [mensagem, setMensagem] = useState("");
@@ -43,6 +44,20 @@ export default function Index() {
     
     }
 
+
+
+  // async function useUsuario() {
+    
+  //   useEffect(() => {
+  //     async function carregar() {
+  //       const userString = await AsyncStorage.getItem("user");
+  //       setUser(userString ? JSON.parse(userString) : null);
+  //     }
+  //     carregar();
+  //   }, []);
+
+  //   return user;
+  // }
   
 
   async function handleTestUsers() {

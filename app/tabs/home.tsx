@@ -5,11 +5,11 @@ import Modal from "react-native-modal";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { scale, verticalScale, moderateScale } from "react-native-size-matters";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { globalStyles } from "../../assets/styles/globalStyles";
 import { Chamados } from "../../assets/components/chamado";
 import { useChamadoDatabase, ChamadoDatabase } from "../../services/chamadoDb";
-
 
 
 export default function Home() {
@@ -18,7 +18,9 @@ export default function Home() {
 
   const [search, setSearch] = useState('');
   const [chamados, setChamados] = useState<ChamadoDatabase[]>([]);
-  
+  const userString = AsyncStorage.getItem("user");
+  const user = userString;
+  console.log(user);
 
   // Menu do Perfil
   const [menuPerfil, setMenuPerfil] = useState(false);
@@ -43,7 +45,7 @@ export default function Home() {
   async function list(){
     try {
       const response = await ProductDatabase.getAll(search);
-      setChamados(response)
+      setChamados(response);
     } catch (error) {
       throw(error)
     } 

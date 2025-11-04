@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { scale, verticalScale, moderateScale } from "react-native-size-matters";
+// import { scale, verticalScale, moderateScale } from "react-native-size-matters";
 
 // cores NeoDesk
 export const colors = {

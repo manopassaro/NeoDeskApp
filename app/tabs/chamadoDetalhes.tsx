@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Image, TouchableOpacity } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { View, Text, Image, TouchableOpacity, ActivityIndicator } from "react-native";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { scale, verticalScale, moderateScale } from "react-native-size-matters";
-import { useRouter } from "expo-router";
-
 
 
 import { globalStyles } from "../../assets/styles/globalStyles";
@@ -23,8 +21,8 @@ export default function ChamadoDetalhesScreen() {
     async function fetchChamado() {
         try {
             const data = await ChamadoDatabase.getById(Number(id));
-            console.log(data);
-            setChamado(data);
+            setChamado({ ...data.statement, usuarioNome: data.usuarioNome });
+            return (data.usuarioNome);
         } catch (error) {
             console.error("Erro ao buscar chamado:", error);
         } finally {
@@ -36,14 +34,14 @@ export default function ChamadoDetalhesScreen() {
     fetchChamado();
   }, [id]);
 
-//   if (loading) {
-//     return (
-//       <View style={[globalStyles.container, { justifyContent: "center", alignItems: "center" }]}>
-//         <ActivityIndicator size="large" color="#007bff" />
-//         <Text style={{ marginTop: 12 }}>Carregando chamado...</Text>
-//       </View>
-//     );
-//   }
+  if (loading) {
+    return (
+      <View style={[globalStyles.container, { justifyContent: "center", alignItems: "center" }]}>
+        <ActivityIndicator size="large" color="#007bff" />
+        <Text style={{ marginTop: 12 }}>Carregando chamado...</Text>
+      </View>
+    );
+  }
 
   if (!chamado) {
     return (
@@ -76,10 +74,10 @@ export default function ChamadoDetalhesScreen() {
           {/* Container central pra alinhar a logo */}
     
           <Image
-              // style={{
-              //   height: verticalScale(35),
-              //   width: "60%",
-              // }}
+              style={{
+                height: verticalScale(35),
+                width: "60%",
+              }}
             source={require("../../assets/images/logo.png")}
             resizeMode="contain"
           />
