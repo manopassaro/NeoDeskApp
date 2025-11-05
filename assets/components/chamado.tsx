@@ -1,6 +1,8 @@
 import { View, ScrollView, ScrollViewProps, Pressable, PressableProps, Text } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { scale, verticalScale } from "react-native-size-matters";
 import { Ionicons } from "@expo/vector-icons";
+import { useState, useEffect } from "react";
 import { useRouter } from "expo-router";
 
 import { globalStyles } from "../../assets/styles/globalStyles";
@@ -32,8 +34,29 @@ type PropsS = ScrollViewProps & {
 
 export function Chamados({data, ...rest}: PropsS){
   const router = useRouter();
+  const [user, setUser] = useState(null);
 
-  // if (userRole === "usuario" && data.usuario_id !== atualId) return null; substitua pela variável correta
+  useEffect(() => {
+    async function carregarUsuario() {
+      try {
+        const userString = await AsyncStorage.getItem("user");
+        if (userString) {
+          const userData = JSON.parse(userString);
+          setUser(userData);
+        }
+      } catch (error) {
+        console.log("Erro ao carregar usuário:", error);
+      }
+    }
+
+    carregarUsuario();
+  }, []);
+
+
+  // 🧠 Filtro: funcionário só vê seus próprios chamados
+  const ehFuncionario = user.tipo_usuario === 0; // 0 = funcionário, 1 = técnico, 2 = admin (ajuste conforme seu sistema)
+
+  if (ehFuncionario && data.usuario_id !== user.id) return null;
 
   const prioridadeCor =
     data.prioridade === 3

@@ -26,6 +26,8 @@ export default function Index() {
     
     try {
       const user = await UserDatabase.login({ email, senha });
+      const savedUser = await AsyncStorage.getItem("user");
+      console.log("Cache salvo:", savedUser);
 
       if (user) {
         // setMensagem("Login realizado com sucesso!");

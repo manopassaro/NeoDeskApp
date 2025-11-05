@@ -53,9 +53,11 @@ export function useChamadoDatabase(){
             const statement = await database.getFirstAsync(query, [id]);
 
             let usuarioNome: string | null = null;
+            let usuarioTipo: string | null = null;
             const usuario = await UserDatabase.getUserById(statement.usuario_id);
             usuarioNome = usuario?.nome ?? null;
-            // console.log(usuarioNome);
+            usuarioTipo = usuario?.tipo_usuario;
+            console.log(usuarioTipo);
             return {statement, usuarioNome};
         } catch(error) {
             throw error

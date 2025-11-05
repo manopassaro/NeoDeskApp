@@ -16,31 +16,33 @@ export default function Home() {
   const router = useRouter();
   const ProductDatabase = useChamadoDatabase();
 
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const [chamados, setChamados] = useState<ChamadoDatabase[]>([]);
-  const userString = AsyncStorage.getItem("user");
-  const user = userString;
-  console.log(user);
-
-  // Menu do Perfil
+  const [user, setUser] = useState<any>(null); // estado para guardar o usuário
+  const [confirmVisible, setConfirmVisible] = useState(false);
   const [menuPerfil, setMenuPerfil] = useState(false);
-
-  // Menu da Barra de Funcionalidades
   const [menuBarra, setMenuBarra] = useState(false);
 
 
-  // Funções que abrirão os menus
-  const abrirPerfil = () => {
-    setMenuPerfil(true);
-    console.log("Abrindo informações do perfil...");
-  };
+   // renderiza o usuário do AsyncStorage
 
-  const abrirFuncionalidades = () => {
-    setMenuBarra(true);
-    console.log("Abrindo lista de funcionalidades...");
-  };
+  async function carregarUsuario() {
+    try {
+      const userString = await AsyncStorage.getItem("user");
+      if (userString) {
+        const userData = JSON.parse(userString);
+        setUser(userData);
+        // console.log("Usuário carregado:", user);
+      } else {
+        // console.log("Nenhum usuário encontrado no cache");
+      }
+    } catch (error) {
+      console.error("Erro ao carregar usuário:", error);
+    }
+  }
 
-  // Renderiza cada chamado
+
+  // renderiza os chamados
   
   async function list(){
     try {
@@ -51,16 +53,46 @@ export default function Home() {
     } 
   }
 
+
+  // executa todos os dados
+
   useEffect(()=>{
-    list()
+    async function carregarUsuario() {
+    try {
+      const userString = await AsyncStorage.getItem("user");
+      if (!userString) {
+        console.log("Nenhum usuário encontrado no cache");
+        return;
+      }
+
+      const userData = JSON.parse(userString);
+      console.log("Usuário carregado:", userData);
+      setUser(userData);
+    } catch (error) {
+      console.log("Erro ao carregar usuário:", error);
+    }
+  };
+    carregarUsuario();
+    list();
   },[search])
   
+
+
+  // funções que abrirão os menus
+  const abrirPerfil = () => {
+    setMenuPerfil(true);
+    console.log("Abrindo informações do perfil...");
+  };
+
+  const abrirFuncionalidades = () => {
+    setMenuBarra(true);
+    console.log("Abrindo lista de funcionalidades...");
+  };
+
  
 
 
-  // Confirmação de Logout
-
-  const [confirmVisible, setConfirmVisible] = useState(false);
+  // confirmação de logout
 
   const handleLogout = () => {
     // Fecha o menu
@@ -69,11 +101,19 @@ export default function Home() {
     setConfirmVisible(true);
   };
 
-  const confirmLogout = () => {
-    setConfirmVisible(false);
-    router.replace("../auth"); // volta pro login
+  const confirmLogout = async () => {
+    try{
+
+      setConfirmVisible(false);
+      await AsyncStorage.removeItem("user");
+      router.replace("../auth"); // volta pro login
+    }catch{
+      console.log("Erro ao fazer logout:", error);
+    }
   };
 
+
+  // front-end
 
   return (
     <SafeAreaView style={{ flex: 1 }}>

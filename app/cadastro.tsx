@@ -15,7 +15,7 @@ export default function CadastrarUsuario() {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
-  const [tipoUsuario, setTipoUsuario] = useState(0); // 0 = padrão, 1 = admin etc.
+  const [tipoUsuario, setTipoUsuario] = useState(0); // 0 = padrão, 1 = tecnico, 2 = admin
   const [isActive, setIsActive] = useState(1); // ativo por padrão
 
   async function createUser() {
@@ -76,9 +76,9 @@ export default function CadastrarUsuario() {
           selectedValue={tipoUsuario}
           onValueChange={(itemValue) => setTipoUsuario(itemValue)}
         >
-          <Picker.Item label="Usuário comum" value={0} />
-          <Picker.Item label="Administrador" value={1} />
-          <Picker.Item label="Técnico" value={2} />
+          <Picker.Item label="Funcionário" value={0} />
+          <Picker.Item label="Técnico" value={1} />
+          <Picker.Item label="Administrador" value={2} />
         </Picker>
       </View>
     
