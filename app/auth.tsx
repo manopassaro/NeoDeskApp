@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, TouchableOpacity, Alert } from "react-native";
+import { Text, View, Image, TouchableOpacity, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { scale, verticalScale, moderateScale } from "react-native-size-matters";
+
 
 import CustomInput from "../assets/components/customInput";
 import { globalStyles } from "../assets/styles/globalStyles";
@@ -69,8 +71,17 @@ export default function Index() {
 
   return (
     <SafeAreaView style={globalStyles.container}> 
-      <View style={globalStyles.content}> 
-        <Text style={globalStyles.title}>Tela Inicial (Login)</Text>
+        <View style={{ alignItems: "center", marginBottom: verticalScale(2)}}>
+          <Image
+            source={require("../assets/images/logo.png")}
+            style={{
+            width: scale(90),
+            height: verticalScale(100),
+          }}
+            resizeMode="contain"
+          />
+        </View>
+        <View style={globalStyles.content}> 
 
         <CustomInput placeholder="Email" value={email} onChangeText={setEmail} />
         <CustomInput placeholder="Senha" value={senha} onChangeText={setSenha} secureTextEntry />
@@ -81,11 +92,11 @@ export default function Index() {
           <Text style={globalStyles.buttonText}>Login</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={globalStyles.button} onPress={() => router.push("/tabs/home")}>
+        {/* <TouchableOpacity style={globalStyles.button} onPress={() => router.push("/tabs/home")}>
           <Text style={globalStyles.buttonText}>Passa Direto</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
-        <TouchableOpacity style={globalStyles.button} onPress={handleTestUsers}>
+        <TouchableOpacity style={globalStyles.button} onPress={() => router.push("/editar")}>
           <Text style={globalStyles.buttonText}>Usuários</Text>
         </TouchableOpacity>
 

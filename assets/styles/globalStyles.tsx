@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-// import { scale, verticalScale, moderateScale } from "react-native-size-matters";
+import { scale, verticalScale, moderateScale } from "react-native-size-matters";
 
 // cores NeoDesk
 export const colors = {
@@ -11,15 +11,20 @@ export const colors = {
 
 export const globalStyles = StyleSheet.create({
 
-    container: {
+  // View
+
+  container: {
     flex: 1,
     justifyContent: 'center',
-    backgroundColor: "#f2f2f2"
+    backgroundColor: "#f2f2f2",
+    marginTop: scale(1),
   },
 
   content: {
     marginHorizontal: 24,
   },
+
+  // Titulos
 
   title: {
     fontSize: 24,
@@ -29,7 +34,7 @@ export const globalStyles = StyleSheet.create({
      marginBottom: 14, // Espaço abaixo do título
   },
 
-  // Botão
+  // Botão padrão
 
   button: {
     backgroundColor: '#007bff', 

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { View, TouchableOpacity, Alert, Text } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, TouchableOpacity, Alert, Text, ScrollView } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -7,6 +7,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import CustomInput from "../assets/components/customInput";
 import { useUserDatabase } from "../services/userDb"; 
 import { globalStyles } from "../assets/styles/globalStyles";
+import { UsuarioItem } from "../assets/components/user";
+
 
 export default function CadastrarUsuario() {
   const router = useRouter();
@@ -17,6 +19,27 @@ export default function CadastrarUsuario() {
   const [senha, setSenha] = useState("");
   const [tipoUsuario, setTipoUsuario] = useState(0); // 0 = padrão, 1 = tecnico, 2 = admin
   const [isActive, setIsActive] = useState(1); // ativo por padrão
+
+  const [usuarios, setUsuarios] = useState([]);
+
+  async function carregarUsuarios() {
+    const lista = await UserDatabase.getAllUsers();
+    setUsuarios(lista);
+  }
+
+  async function handleDelete(id) {
+    await UserDatabase.deleteUser(id);
+    carregarUsuarios();
+  }
+
+  async function handleToggleActive(id, currentStatus) {
+    await UserDatabase.updateUserStatus(id, currentStatus ? 0 : 1);
+    carregarUsuarios();
+  }
+
+  useEffect(() => {
+    carregarUsuarios();
+  }, []);
 
   async function createUser() {
     if (!nome || !email || !senha) {
@@ -64,17 +87,26 @@ export default function CadastrarUsuario() {
         secureTextEntry
       />
 
-      <Text style={{ marginTop: 10, fontWeight: "bold" }}>Tipo de Usuário:</Text>
+      <Text style={{ marginTop: 13, fontWeight: "bold" }}>Tipo de Usuário:</Text>
       <View
         style={{
-          borderWidth: 1,
-          borderRadius: 8,
-          overflow: "hidden",
+        borderWidth: 1,
+        borderColor: "#ccc",
+        borderRadius: 8,
+        paddingHorizontal: 9,
+        marginVertical: 8,
+        backgroundColor: "#fff",
         }}
       >
         <Picker
           selectedValue={tipoUsuario}
           onValueChange={(itemValue) => setTipoUsuario(itemValue)}
+          style={{
+            height: 45,
+            fontSize: 16,
+            color: "#333",
+          }}
+          dropdownIconColor="#666" // funciona no Android
         >
           <Picker.Item label="Funcionário" value={0} />
           <Picker.Item label="Técnico" value={1} />
@@ -82,13 +114,18 @@ export default function CadastrarUsuario() {
         </Picker>
       </View>
     
+      <TouchableOpacity style={globalStyles.button} onPress={createUser}>
+                    <Text style={globalStyles.buttonText}>Cadastrar</Text>
+                </TouchableOpacity>
+
       <TouchableOpacity style={globalStyles.button} onPress={() => router.push("/auth")}>
                     <Text style={globalStyles.buttonText}>Voltar</Text>
                 </TouchableOpacity> 
       
-      <TouchableOpacity style={globalStyles.button} onPress={createUser}>
-                    <Text style={globalStyles.buttonText}>Cadastrar</Text>
-                </TouchableOpacity> 
+      <ScrollView style={{ marginTop: 20 }}>
+
+
+</ScrollView>
     </View>
     </SafeAreaView>
   );

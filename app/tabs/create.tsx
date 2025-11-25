@@ -37,8 +37,8 @@ export default function Create() {
         descricao, 
         status, 
         usuario_id: user.id})
-      Alert.alert("Chamado cadastrado: " + response.insertedRowId);
-      console.log(user.id);
+      // Alert.alert("Chamado cadastrado: " + response.insertedRowId);
+      router.back();
 
     }
 

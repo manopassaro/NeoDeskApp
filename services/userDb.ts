@@ -58,7 +58,7 @@ export function useUserDatabase() {
   // Função de login
   async function login(data: Omit<UserDatabase, "id">) {
     try {
-    // 🔍 Busca o usuário pelo email
+    // busca o usuário pelo email
     const query = `
       SELECT * FROM usuarios
       WHERE email = ?
@@ -110,6 +110,45 @@ export function useUserDatabase() {
       }
   }
 
+  async function deleteUser(id: number) {
+  try {
+    const statement = await database.prepareAsync(
+      `DELETE FROM usuarios WHERE id = $id`
+    );
 
-  return { createUser, login, getAllUsers, getUserById };
+    await statement.executeAsync({ $id: id });
+    await statement.finalizeAsync();
+
+    return true;
+  } catch (error) {
+    console.error("Erro ao excluir usuário:", error);
+    return false;
+  }
+}
+
+  async function updateUserStatus(id: number, newStatus: number) {
+  try {
+    const statement = await database.prepareAsync(
+      `UPDATE usuarios SET is_active = $status WHERE id = $id`
+    );
+
+    await statement.executeAsync({
+      $status: newStatus,
+      $id: id,
+    });
+
+    await statement.finalizeAsync();
+    return true;
+  } catch (error) {
+    console.error("Erro ao atualizar status:", error);
+    return false;
+  }
+}
+
+  return { createUser, 
+    login, 
+    getAllUsers, 
+    getUserById, 
+    deleteUser,
+    updateUserStatus };
 }

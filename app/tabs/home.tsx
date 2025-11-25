@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { View, Text, FlatList, TouchableOpacity, Image, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Modal from "react-native-modal";
-import { useRouter } from "expo-router";
+import { useRouter, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { scale, verticalScale, moderateScale } from "react-native-size-matters";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 import { globalStyles } from "../../assets/styles/globalStyles";
 import { Chamados } from "../../assets/components/chamado";
@@ -23,6 +24,15 @@ export default function Home() {
   const [menuPerfil, setMenuPerfil] = useState(false);
   const [menuBarra, setMenuBarra] = useState(false);
 
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  function handleDelete() {
+    setRefreshKey(x => x + 1);
+  }
+
+  useEffect(() => {
+    list();
+  }, [refreshKey]);
 
    // renderiza o usuário do AsyncStorage
 
@@ -32,7 +42,7 @@ export default function Home() {
       if (userString) {
         const userData = JSON.parse(userString);
         setUser(userData);
-        // console.log("Usuário carregado:", user);
+        console.log("Usuário carregado:", user);
       } else {
         // console.log("Nenhum usuário encontrado no cache");
       }
@@ -112,6 +122,12 @@ export default function Home() {
     }
   };
 
+
+  useFocusEffect(
+  useCallback(() => {
+    list();
+  }, [router])
+);
 
   // front-end
 
@@ -281,7 +297,9 @@ export default function Home() {
       <FlatList
         data={chamados}
         keyExtractor={(item) => String(item.id)}
-        renderItem={({item})=><Chamados data={item}/>}
+        renderItem={({item})=><Chamados
+         data={item}
+         onDelete={handleDelete}/>}
         contentContainerStyle={{ flexGrow: 1 }}
         />
 

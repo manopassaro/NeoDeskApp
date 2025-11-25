@@ -51,6 +51,22 @@ export default function ChamadoDetalhesScreen() {
     );
   }
 
+  // const { remove } = useChamadoDatabase();
+
+async function excluirChamado() {
+    try {
+        const resultado = await ChamadoDatabase.remove(data.id);
+
+        if (resultado.success) {
+            alert("Chamado excluído com sucesso!");
+        } else {
+            alert("Erro: o chamado não foi excluído.");
+        }
+    } catch (err) {
+        console.log("Erro ao excluir:", err);
+    }
+}
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
         <View
@@ -89,6 +105,7 @@ export default function ChamadoDetalhesScreen() {
           </View>
 
         <Chamado data={chamado} />
+        
 
         </SafeAreaView>
         );

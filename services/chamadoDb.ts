@@ -64,5 +64,22 @@ export function useChamadoDatabase(){
         }
     }
 
-    return { create, getAll, getById }
+    async function remove(id: number) {
+    try {
+        const statement = await database.prepareAsync(
+            "DELETE FROM chamados WHERE id = $id"
+        );
+
+        const result = await statement.executeAsync({ $id: id });
+
+        return {
+            success: result.changes > 0,
+            deletedId: id
+        };
+    } catch (error) {
+        throw error;
+    }
+}
+
+    return { create, getAll, getById, remove }
 }

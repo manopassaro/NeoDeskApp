@@ -1,11 +1,12 @@
-import { View, ScrollView, ScrollViewProps, Pressable, PressableProps, Text } from "react-native";
+import { View, ScrollView, ScrollViewProps, Pressable, PressableProps, Text, TouchableOpacity } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { scale, verticalScale } from "react-native-size-matters";
 import { Ionicons } from "@expo/vector-icons";
 import { useState, useEffect } from "react";
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 
 import { globalStyles } from "../../assets/styles/globalStyles";
+import { useChamadoDatabase } from "../../services/chamadoDb"
 
 type PropsP = PressableProps & {
     data:{
@@ -29,11 +30,14 @@ type PropsS = ScrollViewProps & {
     usuario_tipo: string;
     usuarioNome?: string | null;
   };
+  onDelete?: () => void;
 };
+
 
 
 export function Chamados({data, ...rest}: PropsS){
   const router = useRouter();
+  const params = useLocalSearchParams();
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -43,6 +47,7 @@ export function Chamados({data, ...rest}: PropsS){
         if (userString) {
           const userData = JSON.parse(userString);
           setUser(userData);
+          console.log(data.usuario_id);
         }
       } catch (error) {
         console.log("Erro ao carregar usuário:", error);
@@ -52,11 +57,16 @@ export function Chamados({data, ...rest}: PropsS){
     carregarUsuario();
   }, []);
 
+  if (!user) {
+    return null; // impede erros até o usuário ser carregado
+  }
 
-  // 🧠 Filtro: funcionário só vê seus próprios chamados
-  const ehFuncionario = user.tipo_usuario === 0; // 0 = funcionário, 1 = técnico, 2 = admin (ajuste conforme seu sistema)
+  // filtro para os chamados
+  const ehFuncionario = user.tipo_usuario === 0;
 
-  if (ehFuncionario && data.usuario_id !== user.id) return null;
+  if (ehFuncionario && data.usuario_id !== user.id) {
+    return null;
+  }
 
   const prioridadeCor =
     data.prioridade === 3
@@ -68,7 +78,7 @@ export function Chamados({data, ...rest}: PropsS){
   function handlePress() {
     router.push({
       pathname: "/tabs/chamadoDetalhes",
-      params: { id: data.id }, // enviando ID do chamado
+      params: { id: data.id } // enviando ID do chamado
     });
   }
     
@@ -117,6 +127,10 @@ export function Chamados({data, ...rest}: PropsS){
 }
 
 export function Chamado({data, ...rest}: PropsS){
+  const router = useRouter();
+  const params = useLocalSearchParams();
+  const ChamadoDatabase = useChamadoDatabase();
+
     function InfoRow({
   icon,
   label,
@@ -151,6 +165,22 @@ export function Chamado({data, ...rest}: PropsS){
   );
 }
     // console.log(data.usuarioNome)
+
+    async function excluirChamado() {
+    try {
+        const resultado = await ChamadoDatabase.remove(data.id);
+
+        if (resultado.success) {
+            // alert("Chamado excluído com sucesso!");
+            router.back();
+            if (rest.onDelete) rest.onDelete();
+        } else {
+            alert("Erro: o chamado não foi excluído.");
+        }
+    } catch (err) {
+        console.log("Erro ao excluir:", err);
+    }
+}
 
     return (
     <ScrollView
@@ -196,9 +226,23 @@ export function Chamado({data, ...rest}: PropsS){
           icon="information-circle-outline"
           label="Status"
           value={data.status.toUpperCase()}
-          valueColor={data.status === "aberto" ? "#2e7d32" : "#d32f2f"}
+          valueColor={data.status === "ABERTO" ? "#2e7d32" : "#d32f2f"}
         />
+        <TouchableOpacity 
+                  onPress={excluirChamado}
+                  style={{
+                    padding: 8,
+                    borderRadius: 8,
+                    backgroundColor: "#ef4444",
+                    marginTop: 10,
+                   }}
+                >
+                  <Text style={{ color: "white", fontWeight: "bold", textAlign: "center" }}>
+                    Excluir
+                  </Text>
+                </TouchableOpacity>
       </View>
+
 
       {/* Descrição */}
       <View
@@ -230,6 +274,7 @@ export function Chamado({data, ...rest}: PropsS){
         >
           {data.descricao}
         </Text>
+        
       </View>
     </ScrollView>
   );
