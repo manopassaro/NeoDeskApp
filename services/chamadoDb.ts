@@ -5,6 +5,7 @@ export type ChamadoDatabase = {
     id: number,
     titulo: string
     descricao: string,
+    prioridade: string,
     status: string,
     usuario_id: number
 }
@@ -13,24 +14,24 @@ export function useChamadoDatabase(){
     const database = useSQLiteContext();
     const UserDatabase = useUserDatabase();
 
-    async function create(data: Omit<ChamadoDatabase, "id">) {
+    async function create(data: Omit<ChamadoDatabase, "id" | "status">) {
         const statement = await database.prepareAsync(
-            "INSERT INTO chamados (titulo, descricao, status, usuario_id) VALUES ($titulo, $descricao, $status, $usuario_id)"
-        )
+            "INSERT INTO chamados (titulo, descricao, prioridade, usuario_id) VALUES ($titulo, $descricao, $prioridade, $usuario_id)"
+        );
         try {
             const result = await statement.executeAsync({
                 $titulo: data.titulo,
                 $descricao: data.descricao,
-                $status: data.status,
+                $prioridade: data.prioridade,
                 $usuario_id: data.usuario_id
-            })
+            });
 
             const insertedRowId = result.lastInsertRowId.toLocaleString();
-            return{ insertedRowId }
+            return { insertedRowId };
         } catch (error) {
-            throw error 
-        }finally{
-            await statement.finalizeAsync()
+            throw error;
+        } finally {
+            await statement.finalizeAsync();
         }
     }
 

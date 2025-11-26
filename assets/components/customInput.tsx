@@ -6,15 +6,17 @@ type Props = {
   value: string;
   onChangeText: (text: string) => void;
   secureTextEntry?: boolean;
+  autoCapitalize?: "none" | "sentences" | "words" | "characters";
 };
 
-export default function CustomInput({ placeholder, value, onChangeText, secureTextEntry }: Props) {
+export default function CustomInput({ placeholder, value, onChangeText, secureTextEntry, autoCapitalize = "none" }: Props) {
   return (
     <TextInput
       placeholder={placeholder}
       value={value}
       onChangeText={onChangeText}
       secureTextEntry={secureTextEntry}
+      autoCapitalize={autoCapitalize}
       style={{
         borderWidth: 1,
         borderColor: "#ccc",

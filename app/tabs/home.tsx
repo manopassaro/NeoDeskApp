@@ -6,6 +6,8 @@ import { useRouter, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { scale, verticalScale, moderateScale } from "react-native-size-matters";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Linking from "expo-linking";
+
 
 
 import { globalStyles } from "../../assets/styles/globalStyles";
@@ -19,39 +21,18 @@ export default function Home() {
 
   const [search, setSearch] = useState("");
   const [chamados, setChamados] = useState<ChamadoDatabase[]>([]);
-  const [user, setUser] = useState<any>(null); // estado para guardar o usuário
+  const [user, setUser] = useState<any>(null);
   const [confirmVisible, setConfirmVisible] = useState(false);
   const [menuPerfil, setMenuPerfil] = useState(false);
   const [menuBarra, setMenuBarra] = useState(false);
+  const [modalEquipe, setModalEquipe] = useState(false);
 
   const [refreshKey, setRefreshKey] = useState(0);
 
-  function handleDelete() {
-    setRefreshKey(x => x + 1);
+  function abrirGithub(url: string) {
+    Linking.openURL(url);
   }
-
-  useEffect(() => {
-    list();
-  }, [refreshKey]);
-
-   // renderiza o usuário do AsyncStorage
-
-  async function carregarUsuario() {
-    try {
-      const userString = await AsyncStorage.getItem("user");
-      if (userString) {
-        const userData = JSON.parse(userString);
-        setUser(userData);
-        console.log("Usuário carregado:", user);
-      } else {
-        // console.log("Nenhum usuário encontrado no cache");
-      }
-    } catch (error) {
-      console.error("Erro ao carregar usuário:", error);
-    }
-  }
-
-
+  
   // renderiza os chamados
   
   async function list(){
@@ -63,51 +44,66 @@ export default function Home() {
     } 
   }
 
-
-  // executa todos os dados
-
   useEffect(()=>{
-    async function carregarUsuario() {
-    try {
-      const userString = await AsyncStorage.getItem("user");
-      if (!userString) {
-        console.log("Nenhum usuário encontrado no cache");
-        return;
-      }
-
-      const userData = JSON.parse(userString);
-      console.log("Usuário carregado:", userData);
-      setUser(userData);
-    } catch (error) {
-      console.log("Erro ao carregar usuário:", error);
-    }
-  };
-    carregarUsuario();
     list();
   },[search])
+
+  // renderiza o usuário do AsyncStorage
   
+  async function carregarUsuario() {
+    try {
+      const userString = await AsyncStorage.getItem("user");
+      if (!userString) return;
+      
+      const userData = JSON.parse(userString);
+      setUser(userData);
+      
+    } catch (error) {
+      console.error("Erro ao carregar usuário:", error);
+    }
+  }
+
+  useEffect(()=>{
+    carregarUsuario();
+  },[])
+  
+  
+  
+  // atualiza dados após exclusão
+
+  function handleDelete() {
+    setRefreshKey(x => x + 1);
+  }
+
+  useEffect(() => {
+    list();
+  }, [refreshKey]);
 
 
   // funções que abrirão os menus
+
   const abrirPerfil = () => {
     setMenuPerfil(true);
-    console.log("Abrindo informações do perfil...");
   };
 
   const abrirFuncionalidades = () => {
     setMenuBarra(true);
-    console.log("Abrindo lista de funcionalidades...");
   };
 
- 
+  const abrirEquipe = () => {
+    setModalEquipe(true);
+    setMenuBarra(false);
+  };
 
+  
+ 
 
   // confirmação de logout
 
   const handleLogout = () => {
-    // Fecha o menu
-    setMenuPerfil(false);
-    // Mostra modal de confirmação
+    // fecha o menu
+    setMenuBarra(false);
+    // mostra modal de confirmação
     setConfirmVisible(true);
   };
 
@@ -129,6 +125,7 @@ export default function Home() {
   }, [router])
 );
 
+
   // front-end
 
   return (
@@ -147,39 +144,7 @@ export default function Home() {
           borderRadius: scale(2)
         }}
       >
-        {/* Ícone esquerdo - Perfil */}
-        <TouchableOpacity onPress={abrirPerfil}>
-          <Ionicons name="person-circle-outline" size={scale(45)} color="black" />
-        </TouchableOpacity>
-
-        <Modal
-        isVisible={menuPerfil}
-        animationIn="slideInLeft"   // desliza da esquerda
-        animationOut="slideOutLeft" // fecha deslizando para a esquerda
-        onBackdropPress={() => setMenuPerfil(false)} // fecha ao tocar fora
-        style={{ margin: 0, justifyContent: "flex-start", alignItems: "flex-start" }}
-      >
-        <View
-          style={{
-            width: scale(250),
-            height: "100%",
-            backgroundColor: "#fff",
-            padding: scale(20),
-          }}
-        >
-          <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-      <Ionicons
-        onPress={() => setMenuPerfil(false)}
-        name="person-circle-outline"
-        size={scale(45)}
-        color="black"
-      />
-    </View>
-          <Text>NOME</Text>
-          <Text>EMAIL</Text>
-          <Text>NÍVEL</Text>
-        </View>
-      </Modal>
+        
 
 
         {/* LOGO DO APP */}
@@ -193,48 +158,323 @@ export default function Home() {
       />
 
 
-        {/* Ícone direito - Funcionalidades */}
-        <TouchableOpacity onPress={abrirFuncionalidades}>
-          <Ionicons name="menu-outline" size={scale(40)} color="black" />
-        </TouchableOpacity>
+      </View>
+        
+
+
+
+      {/* Lista de chamados */}
+      <View style={globalStyles.container}>
+
+      {!user ? (
+    <Text>Carregando...</Text>  // pode trocar por um spinner depois
+  ) : (
+    <FlatList
+      data={[...chamados].sort((a, b) => b.id - a.id)}
+      keyExtractor={(item) => String(item.id)}
+      renderItem={({ item }) => (
+        <Chamados data={item} user={user} onDelete={handleDelete} />
+      )}
+      contentContainerStyle={{ flexGrow: 1 }}
+    />
+  )}
+
       </View>
 
-         <Modal
-        isVisible={menuBarra}
-        animationIn="slideInRight"   // desliza da direita
-        animationOut="slideOutRight" // fecha deslizando pra direita
-        onBackdropPress={() => setMenuBarra(false)} // fecha ao tocar fora
-        style={{ margin: 0, justifyContent: "flex-start", alignItems: "flex-end" }}
+
+      {/* Barra inferior */}
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-around",
+          alignItems: "center",
+          paddingVertical: verticalScale(10),
+          borderTopWidth: scale(1),
+          borderColor: "#ddd",
+        }}
       >
+        {/* Ícone esquerdo - Perfil */}
+        <TouchableOpacity onPress={abrirPerfil}>
+          <Ionicons name="person-circle-outline" size={scale(40)} color="#000022" />
+        </TouchableOpacity>
+
+        <Modal
+  isVisible={menuPerfil}
+  animationIn="fadeInUp"
+  animationOut="fadeOutDown"
+  onBackdropPress={() => setMenuPerfil(false)}
+  style={{ margin: 0, justifyContent: "center", alignItems: "center" }}
+>
+  <View
+    style={{
+      width: "85%",
+      borderRadius: 20,
+      padding: scale(20),
+      backgroundColor: "#fff",
+      elevation: 10,
+      shadowColor: "#000",
+      shadowOpacity: 0.2,
+      shadowRadius: 10,
+    }}
+  >
+    {/* BOTÃO FECHAR */}
+    <TouchableOpacity
+      onPress={() => setMenuPerfil(false)}
+      style={{ position: "absolute", top: 12, right: 12 }}
+    >
+      <Ionicons name="close" size={scale(22)} color="#333" />
+    </TouchableOpacity>
+
+    {/* ÍCONE DO PERFIL */}
+    <View style={{ alignItems: "center", marginBottom: scale(15) }}>
+      <Ionicons
+        name="person-circle-outline"
+        size={scale(80)}
+        color="#444"
+        style={{ marginBottom: 8 }}
+      />
+      <Text style={{ fontSize: scale(18), fontWeight: "700", color: "#222" }}>
+        {user?.nome}
+      </Text>
+    </View>
+
+    {/* LINHA DIVISÓRIA */}
+    <View
+      style={{
+        height: 1,
+        backgroundColor: "#e5e5e5",
+        marginVertical: scale(10),
+      }}
+    />
+
+    {/* EMAIL */}
+    <View style={{ marginBottom: scale(15) }}>
+      <Text style={{ color: "#666", fontSize: scale(12) }}>Email</Text>
+      <Text
+        style={{
+          fontSize: scale(15),
+          fontWeight: "500",
+          color: "#333",
+          marginTop: 2,
+        }}
+      >
+        {user?.email}
+      </Text>
+    </View>
+
+    {/* TIPO DE USUÁRIO */}
+    <View style={{ marginBottom: scale(15) }}>
+      <Text style={{ color: "#666", fontSize: scale(12) }}>Nível</Text>
+      <View
+        style={{
+          marginTop: 4,
+          alignSelf: "flex-start",
+          backgroundColor:
+            user?.tipo_usuario === 2
+              ? "#2563eb" // admin = azul
+              : user?.tipo_usuario === 1
+              ? "#16a34a" // funcionario = verde
+              : "#ca8a04", // cliente = amarelo
+          paddingHorizontal: 12,
+          paddingVertical: 4,
+          borderRadius: 20,
+        }}
+      >
+        <Text style={{ color: "#fff", fontWeight: "600" }}>
+          {user?.tipo_usuario === 2
+            ? "Administrador"
+            : user?.tipo_usuario === 1
+            ? "Funcionário"
+            : "Cliente"}
+        </Text>
+      </View>
+    </View>
+
+    {/* LINHA DIVISÓRIA */}
+    <View
+      style={{
+        height: 1,
+        backgroundColor: "#e5e5e5",
+        marginVertical: scale(10),
+      }}
+    />
+
+  </View>
+</Modal>
+
+
+        <TouchableOpacity style={globalStyles.create} onPress={() => router.push("/tabs/create")} activeOpacity={0.8}>
+        <Ionicons name="add" size={28} color="#fff" />
+      </TouchableOpacity>
+
+        {/* Ícone direito - Funcionalidades */}
+        <TouchableOpacity onPress={abrirFuncionalidades}>
+          <Ionicons name="settings-outline" size={scale(35)} color="black" />
+        </TouchableOpacity>
+
+         <Modal
+  isVisible={menuBarra}
+  animationIn="slideInRight"
+  animationOut="slideOutRight"
+  onBackdropPress={() => setMenuBarra(false)}
+  style={{ margin: 0, justifyContent: "flex-start", alignItems: "flex-end" }}
+>
+  <View
+    style={{
+      width: scale(260),
+      height: "100%",
+      backgroundColor: "#fff",
+      padding: scale(20),
+      paddingTop: verticalScale(20),
+    }}
+  >
+    {/* Ícone Fechar */}
+    <View>
+
+    <Ionicons
+      onPress={() => setMenuBarra(false)}
+      name="close"
+      size={scale(30)}
+      color="black"
+      style={{ alignSelf: "flex-start" }}
+      />
+    </View>
+
+    <View
+      style={{
+        width: "100%",
+        height: 1,
+        backgroundColor: "#ddd",
+        marginTop: verticalScale(15),
+        marginBottom: verticalScale(20),
+      }}
+  />
+    {/* Container principal */}
+    <View style={{ marginTop: verticalScale(8) }}>
+
+      {/* Botão Equipe Dev */}
+      <TouchableOpacity
+        onPress={abrirEquipe}
+        style={{
+          paddingVertical: 12,
+          borderRadius: 10,
+          backgroundColor: "#4983ffff", // azul bonito
+          alignItems: "center",
+          marginBottom: 15,
+        }}
+      >
+        <Text style={{ color: "#fff", fontSize: 16, fontWeight: "bold" }}>
+          Equipe Dev
+        </Text>
+      </TouchableOpacity>
+
+      {/* Botão Logout */}
+      <TouchableOpacity
+        onPress={handleLogout}
+        style={{
+          paddingVertical: 12,
+          borderRadius: 10,
+          backgroundColor: "#df4848ff",
+          alignItems: "center",
+        }}
+      >
+        <Text style={{ color: "#fff", fontSize: 16, fontWeight: "bold" }}>
+          Logout
+        </Text>
+      </TouchableOpacity>
+    </View>
+
+    {/* Rodapé */}
+    <View style={{ flex: 1, justifyContent: "flex-end" }}>
+      <Text style={{ color: "#999", marginBottom: 10 }}>Versão 1.0.0</Text>
+    </View>
+  </View>
+</Modal>
+
+
+      {/* GITHUB */}
+
+      <Modal
+  isVisible={modalEquipe}
+  onBackdropPress={() => setModalEquipe(false)}
+>
+  <View
+    style={{
+      backgroundColor: "#fff",
+      borderRadius: scale(8),
+      padding: scale(17),
+      width: "95%",
+      alignSelf: "center",
+    }}
+  >
+    {/* Título */}
+    <Text
+      style={{
+        fontSize: scale(18),
+        fontWeight: "bold",
+        marginBottom: verticalScale(20),
+        textAlign: "center",
+      }}
+    >
+      Equipe de Desenvolvimento
+    </Text>
+
+    {/* Lista dinâmica */}
+    {[
+      { nome: "Luiz Miguel Lemes", git: "https://github.com/manopassaro" },
+      { nome: "Pedro Henrique de Souza", git: "https://github.com/PedroRSouza0" },
+      { nome: "Renan Nogueira Ribeiro", git: "https://github.com/renanrnk" },
+      { nome: "Lucas Antônio Goulart", git: "https://github.com/LucasAntonioGS" },
+      { nome: "Lívia Vieira Jacó", git: "https://github.com/JacoLCode" },
+    ].map((item, index) => (
+      <View key={index}>
+        
+        {/* Linha do integrante */}
         <View
           style={{
-            width: scale(250),
-            height: "100%",
-            backgroundColor: "#fff",
-            padding: scale(20),
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            paddingVertical: verticalScale(12),
+            paddingHorizontal: scale(12),
+            backgroundColor: "#eeeeeeff",
+            borderRadius: scale(6),
           }}
         >
-          <Ionicons 
-            onPress={() => setMenuBarra(false)}
-            name="menu-outline" 
-            size={scale(40)} 
-            color="black" />
+          <Text style={{ fontSize: scale(14), fontWeight: "500" }}>{item.nome}</Text>
+
+          {/* Botão GitHub */}
           <TouchableOpacity
-          onPress={handleLogout}
-          style={{
-            marginTop: verticalScale(30),
-            paddingVertical: verticalScale(10),
-            paddingHorizontal: scale(15),
-            backgroundColor: "#DC2626",
-            borderRadius: scale(8),
-          }}
-        >
-          <Text style={{ color: "#fff", fontSize: moderateScale(16), fontWeight: "bold" }}>
-            Logout
-          </Text>
-        </TouchableOpacity>
+            onPress={() => abrirGithub(item.git)}
+            style={{
+              backgroundColor: "#797979ff",
+              paddingVertical: verticalScale(6),
+              paddingHorizontal: scale(12),
+              borderRadius: scale(12),
+            }}
+          >
+            <Text style={{ color: "#fff", fontWeight: "bold", fontSize: scale(12) }}>
+              GitHub
+            </Text>
+          </TouchableOpacity>
         </View>
-      </Modal>
+
+        {/* Divisor */}
+        {index < 4 && (
+          <View
+            style={{
+              height: verticalScale(1),
+              backgroundColor: "#e5e7eb",
+              marginVertical: verticalScale(6),
+            }}
+          />
+        )}
+      </View>
+    ))}
+  </View>
+</Modal>
+
+
 
       {/* Confirmação de Logout */}
 
@@ -288,46 +528,6 @@ export default function Home() {
           </View>
         </View>
       </Modal>
-
-
-
-      {/* Lista de chamados */}
-      <View style={globalStyles.container}>
-
-      <FlatList
-        data={chamados}
-        keyExtractor={(item) => String(item.id)}
-        renderItem={({item})=><Chamados
-         data={item}
-         onDelete={handleDelete}/>}
-        contentContainerStyle={{ flexGrow: 1 }}
-        />
-
-      </View>
-
-
-      {/* Barra inferior */}
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-around",
-          alignItems: "center",
-          paddingVertical: verticalScale(10),
-          borderTopWidth: scale(1),
-          borderColor: "#ddd",
-        }}
-      >
-        <TouchableOpacity onPress={() => router.push("/home")}>
-          <Ionicons name="home-outline" size={scale(26)} color="black" />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={globalStyles.create} onPress={() => router.push("/tabs/create")} activeOpacity={0.8}>
-        <Ionicons name="add" size={28} color="#fff" />
-      </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => router.push("/configuracoes")}>
-          <Ionicons name="settings-outline" size={scale(26)} color="black" />
-        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );

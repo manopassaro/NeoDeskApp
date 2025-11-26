@@ -27,100 +27,76 @@ type PropsS = ScrollViewProps & {
     status: string;
     prioridade?: number;
     usuario_id?: number | null;
-    usuario_tipo: string;
+    usuario_tipo?: string;
     usuarioNome?: string | null;
+  };
+  user: {
+    id: number;
+    tipo_usuario: number;
+    nome: string;
   };
   onDelete?: () => void;
 };
 
 
 
-export function Chamados({data, ...rest}: PropsS){
+export function Chamados({ data, user, ...rest }: PropsS) {
   const router = useRouter();
-  const params = useLocalSearchParams();
-  const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    async function carregarUsuario() {
-      try {
-        const userString = await AsyncStorage.getItem("user");
-        if (userString) {
-          const userData = JSON.parse(userString);
-          setUser(userData);
-          console.log(data.usuario_id);
-        }
-      } catch (error) {
-        console.log("Erro ao carregar usuário:", error);
-      }
-    }
-
-    carregarUsuario();
-  }, []);
-
-  if (!user) {
-    return null; // impede erros até o usuário ser carregado
-  }
-
-  // filtro para os chamados
+  // console.log(user);
+  // filtro para funcionários (tipo_usuario = 0)
   const ehFuncionario = user.tipo_usuario === 0;
 
   if (ehFuncionario && data.usuario_id !== user.id) {
-    return null;
+    return null; // esconde chamados que não pertencem ao funcionário
   }
 
   const prioridadeCor =
-    data.prioridade === 3
-      ? "#dc2626" // vermelho (alta)
-      : data.prioridade === 2
-      ? "#facc15" // amarela (média)
-      : "#22c55e"; // verde (baixa)
-    
+    data.prioridade === 3 ? "#dc2626"
+    : data.prioridade === 2 ? "#facc15"
+    : "#22c55e";
+
   function handlePress() {
     router.push({
       pathname: "/tabs/chamadoDetalhes",
-      params: { id: data.id } // enviando ID do chamado
+      params: { id: data.id },
     });
   }
-    
-    return (
-    <Pressable {...rest}
-    onPress={(handlePress)} 
-    style={({ pressed }) => [
-      globalStyles.containerChamado,
-      pressed && globalStyles.pressed
-      ]}>
+
+  return (
+    <Pressable
+      {...rest}
+      onPress={handlePress}
+      style={({ pressed }) => [
+        globalStyles.containerChamado,
+        pressed && globalStyles.pressed
+      ]}
+    >
       <View style={globalStyles.card}>
-        <View style={globalStyles.header}>
+        
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <Text style={globalStyles.titleChamado} numberOfLines={1}>
             {data.titulo}
           </Text>
+        </View>
 
-
+        <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 6 }}>
           <Text
             style={[
               globalStyles.status,
-              data.status === "aberto" 
-              ? globalStyles.statusAberto 
-              : globalStyles.statusFechado,
+              data.status === "aberto"
+                ? globalStyles.statusAberto
+                : globalStyles.statusFechado,
             ]}
           >
             {data.status.toUpperCase()}
           </Text>
-        </View>
 
-        <View style={{ flexDirection: "row", alignItems: "center", marginTop: 8 }}>
-          <Ionicons name="person-circle" size={18} color="#6b7280" />
-          <Text style={{ fontSize: 14, color: "#374151", marginLeft: 4 }}>
-            {data.usuarioNome || "Usuário"}
+          <Text style={{ fontSize: 14, color: "#374151" }}>
+            {data.prioridade} Prioridade
           </Text>
-
-          <View style={{ marginLeft: "auto", flexDirection: "row", alignItems: "center" }}>
-            <Ionicons name="flag" size={16} color={prioridadeCor} />
-            <Text style={{ fontSize: 14, color: prioridadeCor, marginLeft: 4 }}>
-              Prioridade {data.prioridade ?? 1}
-            </Text>
-          </View>
         </View>
+
       </View>
     </Pressable>
   );

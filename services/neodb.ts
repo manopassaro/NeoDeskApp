@@ -16,10 +16,11 @@ export async function initializeDatabase (database: SQLiteDatabase) {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         titulo TEXT NOT NULL,
         descricao TEXT,
-        prioridade INTEGER DEFAULT 1,
+        prioridade TEXT DEFAULT 'baixa',
         status TEXT DEFAULT 'aberto',
         usuario_id INTEGER,
         FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
       );
     `)
+
 }

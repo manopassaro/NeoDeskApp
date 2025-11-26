@@ -84,7 +84,6 @@ export function useUserDatabase() {
 
     // ok...
     console.log("Login bem-sucedido:", user);
-    router.push("/tabs/home");
     return user;
 
   } catch (error: any) {

@@ -28,46 +28,20 @@ export default function Index() {
     
     try {
       const user = await UserDatabase.login({ email, senha });
-      const savedUser = await AsyncStorage.getItem("user");
-      console.log("Cache salvo:", savedUser);
 
       if (user) {
-        // setMensagem("Login realizado com sucesso!");
-        // setMensagemTipo("sucesso");
 
         await AsyncStorage.setItem("user", JSON.stringify(user));
+        router.push("/tabs/home");
 
-        // AsyncStorage.getItem("user").then((v) => console.log(v));
-        // setTimeout(() => router.push("/tabs/home"), 1000);
       }
     } catch (error: any) {
-      // mensagem do backend (error.message)
       setMensagem(error.message || "Erro inesperado ao fazer login");
       setMensagemTipo("erro");
     }
     
     }
-
-
-
-  // async function useUsuario() {
-    
-  //   useEffect(() => {
-  //     async function carregar() {
-  //       const userString = await AsyncStorage.getItem("user");
-  //       setUser(userString ? JSON.parse(userString) : null);
-  //     }
-  //     carregar();
-  //   }, []);
-
-  //   return user;
-  // }
   
-
-  async function handleTestUsers() {
-    const users = await UserDatabase.getAllUsers();
-    console.log("Todos os usuários:", users);
-  }
 
   return (
     <SafeAreaView style={globalStyles.container}> 

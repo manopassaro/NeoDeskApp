@@ -17,29 +17,9 @@ export default function CadastrarUsuario() {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
-  const [tipoUsuario, setTipoUsuario] = useState(0); // 0 = padrão, 1 = tecnico, 2 = admin
+  const [tipoUsuario, setTipoUsuario] = useState("Tipo de Usuário"); // 0 = padrão, 1 = tecnico, 2 = admin
   const [isActive, setIsActive] = useState(1); // ativo por padrão
 
-  const [usuarios, setUsuarios] = useState([]);
-
-  async function carregarUsuarios() {
-    const lista = await UserDatabase.getAllUsers();
-    setUsuarios(lista);
-  }
-
-  async function handleDelete(id) {
-    await UserDatabase.deleteUser(id);
-    carregarUsuarios();
-  }
-
-  async function handleToggleActive(id, currentStatus) {
-    await UserDatabase.updateUserStatus(id, currentStatus ? 0 : 1);
-    carregarUsuarios();
-  }
-
-  useEffect(() => {
-    carregarUsuarios();
-  }, []);
 
   async function createUser() {
     if (!nome || !email || !senha) {
@@ -72,6 +52,7 @@ export default function CadastrarUsuario() {
         placeholder="Nome"
         value={nome}
         onChangeText={setNome}
+        autoCapitalize="words"
       />
       <CustomInput
         placeholder="Email"
