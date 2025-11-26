@@ -10,7 +10,7 @@ export type ChamadoDatabase = {
     usuario_id: number
 }
 
-export function useChamadoDatabase(){
+export function useChamadoDatabase() {
     const database = useSQLiteContext();
     const UserDatabase = useUserDatabase();
 
@@ -36,18 +36,18 @@ export function useChamadoDatabase(){
     }
 
     async function getAll(search: string) {
-        try{
+        try {
             const query = "SELECT * FROM chamados WHERE titulo LIKE ?"
-        
+
             const response = await database.getAllAsync<ChamadoDatabase>(query, `%${search}`)
             return (response)
-        }catch(error){
-            throw(error)
+        } catch (error) {
+            throw (error)
         }
     }
 
     async function getById(id: number) {
-        
+
 
         try {
             const query = "SELECT * FROM chamados WHERE id = ? LIMIT 1"
@@ -59,28 +59,28 @@ export function useChamadoDatabase(){
             usuarioNome = usuario?.nome ?? null;
             usuarioTipo = usuario?.tipo_usuario;
             console.log(usuarioTipo);
-            return {statement, usuarioNome};
-        } catch(error) {
+            return { statement, usuarioNome };
+        } catch (error) {
             throw error
         }
     }
 
     async function remove(id: number) {
-    try {
-        const statement = await database.prepareAsync(
-            "DELETE FROM chamados WHERE id = $id"
-        );
+        try {
+            const statement = await database.prepareAsync(
+                "DELETE FROM chamados WHERE id = $id"
+            );
 
-        const result = await statement.executeAsync({ $id: id });
+            const result = await statement.executeAsync({ $id: id });
 
-        return {
-            success: result.changes > 0,
-            deletedId: id
-        };
-    } catch (error) {
-        throw error;
+            return {
+                success: result.changes > 0,
+                deletedId: id
+            };
+        } catch (error) {
+            throw error;
+        }
     }
-}
 
     return { create, getAll, getById, remove }
 }

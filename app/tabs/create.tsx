@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, Image, FlatList, TextInput, TouchableOpacity, Alert } from "react-native";
+import {
+  Text,
+  View,
+  Image,
+  FlatList,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -8,114 +16,109 @@ import { Ionicons } from "@expo/vector-icons";
 import { scale, verticalScale, moderateScale } from "react-native-size-matters";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-
 import { useChamadoDatabase } from "../../services/chamadoDb";
 import { globalStyles } from "../../assets/styles/globalStyles";
-
 
 export default function Create() {
   const router = useRouter();
   const ChamadoDatabase = useChamadoDatabase();
 
-//   const [chamados, setChamados] = useState([]);
+  //   const [chamados, setChamados] = useState([]);
 
-  const [id, setId] = useState(''); 
-  const [titulo, setTitulo] = useState('');
-  const [descricao, setDescricao] = useState('');
-  const [prioridade, setPrioridade] = useState('');
+  const [id, setId] = useState("");
+  const [titulo, setTitulo] = useState("");
+  const [descricao, setDescricao] = useState("");
+  const [prioridade, setPrioridade] = useState("");
 
-    async function create() {
-      const userString = await AsyncStorage.getItem("user");
-      const user = userString ? JSON.parse(userString) : null;
+  async function create() {
+    const userString = await AsyncStorage.getItem("user");
+    const user = userString ? JSON.parse(userString) : null;
 
-      if (!user) {
-        Alert.alert("Erro", "Usuário não autenticado!");
-        return;
-  }
-
-      const response = await ChamadoDatabase.create({
-        titulo, 
-        descricao, 
-        prioridade, 
-        usuario_id: user.id})
-      // Alert.alert("Chamado cadastrado: " + response.insertedRowId);
-      router.back();
-
+    if (!user) {
+      Alert.alert("Erro", "Usuário não autenticado!");
+      return;
     }
 
-
-
-  
+    const response = await ChamadoDatabase.create({
+      titulo,
+      descricao,
+      prioridade,
+      usuario_id: user.id,
+    });
+    // Alert.alert("Chamado cadastrado: " + response.insertedRowId);
+    router.back();
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-  
-  {/* HEADER */}
-  <View
-    style={{
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-      backgroundColor: "#F2F2F2",
-      paddingHorizontal: scale(16),
-      paddingVertical: verticalScale(10),
-      borderBottomWidth: scale(1),
-      borderColor: "#cacacaff",
-      borderRadius: scale(2)
-    }}
-  >
-    <TouchableOpacity style={globalStyles.back} onPress={() => router.back()}>
-      <Ionicons name="arrow-back" size={24} color="#686868ff" />
-    </TouchableOpacity>
+      {/* HEADER */}
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          backgroundColor: "#F2F2F2",
+          paddingHorizontal: scale(16),
+          paddingVertical: verticalScale(10),
+          borderBottomWidth: scale(1),
+          borderColor: "#cacacaff",
+          borderRadius: scale(2),
+        }}
+      >
+        <TouchableOpacity
+          style={globalStyles.back}
+          onPress={() => router.back()}
+        >
+          <Ionicons name="arrow-back" size={24} color="#686868ff" />
+        </TouchableOpacity>
 
-    <Image
-      source={require("../../assets/images/logo.png")}
-      resizeMode="contain"
-      style={{ height: verticalScale(35), width: "60%" }}
-    />
+        <Image
+          source={require("../../assets/images/logo.png")}
+          resizeMode="contain"
+          style={{ height: verticalScale(35), width: "60%" }}
+        />
 
-    <View style={{ width: 32 }} />
-  </View>
+        <View style={{ width: 32 }} />
+      </View>
 
+      {/* CONTEÚDO + BOTÃO FIXO */}
+      <View style={{ flex: 1, padding: 20, backgroundColor: "#f2f2f2" }}>
+        <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 10 }}>
+          Criar Chamado
+        </Text>
 
-  {/* CONTEÚDO + BOTÃO FIXO */}
-  <View style={{ flex: 1, padding: 20, backgroundColor: "#f2f2f2" }}>
+        {/* TÍTULO */}
+        <TextInput
+          placeholder="Título"
+          value={titulo}
+          onChangeText={setTitulo}
+          style={{
+            backgroundColor: "#fff",
+            padding: 10,
+            marginBottom: 10,
+            borderRadius: 8,
+          }}
+        />
 
-    <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 10 }}>Criar Chamado</Text>
+        {/* PRIORIDADE */}
+        <View
+          style={{
+            backgroundColor: "#fff",
+            borderRadius: 8,
+            marginBottom: 10,
+          }}
+        >
+          <Picker selectedValue={prioridade} onValueChange={setPrioridade}>
+            <Picker.Item label="Selecione a prioridade" value="" />
+            <Picker.Item label="Baixa" value="baixa" />
+            <Picker.Item label="Média" value="media" />
+            <Picker.Item label="Alta" value="alta" />
+            <Picker.Item label="Crítica" value="critica" />
+          </Picker>
+        </View>
 
-    {/* TÍTULO */}
-    <TextInput
-      placeholder="Título"
-      value={titulo}
-      onChangeText={setTitulo}
-      style={{
-        backgroundColor: "#fff",
-        padding: 10,
-        marginBottom: 10,
-        borderRadius: 8,
-      }}
-    />
-
-    {/* PRIORIDADE */}
-    <View
-      style={{
-        backgroundColor: "#fff",
-        borderRadius: 8,
-        marginBottom: 10,
-      }}
-    >
-      <Picker selectedValue={prioridade} onValueChange={setPrioridade}>
-        <Picker.Item label="Selecione a prioridade" value="" />
-        <Picker.Item label="Baixa" value="baixa" />
-        <Picker.Item label="Média" value="media" />
-        <Picker.Item label="Alta" value="alta" />
-        <Picker.Item label="Crítica" value="critica" />
-      </Picker>
-    </View>
-
-
-    {/* STATUS (se realmente precisar aqui) */}
-    {/* <TextInput
+        {/* STATUS (se realmente precisar aqui) */}
+        {/* <TextInput
       placeholder="Status"
       value={status}
       onChangeText={setStatus}
@@ -127,39 +130,38 @@ export default function Create() {
       }}
     /> */}
 
-      {/* DESCRIÇÃO — OCUPA O RESTANTE DA TELA */}
-      <TextInput
-        placeholder="Descrição do chamado"
-        value={descricao}
-        onChangeText={setDescricao}
-        multiline
-        style={{
-          backgroundColor: "#fff",
-          padding: 10,
-          borderRadius: 8,
-          flex: 1,
-          textAlignVertical: "top",
-        }}
-      />
-  </View>
+        {/* DESCRIÇÃO — OCUPA O RESTANTE DA TELA */}
+        <TextInput
+          placeholder="Descrição do chamado"
+          value={descricao}
+          onChangeText={setDescricao}
+          multiline
+          style={{
+            backgroundColor: "#fff",
+            padding: 10,
+            borderRadius: 8,
+            flex: 1,
+            textAlignVertical: "top",
+          }}
+        />
+      </View>
 
-  {/* BOTÃO NO RODAPÉ */}
-  <View style={{ padding: 20, backgroundColor: "#f2f2f2" }}>
-    <TouchableOpacity
-      onPress={create}
-      style={{
-        backgroundColor: "#4CAF50",
-        padding: 14,
-        borderRadius: 8,
-        alignItems: "center",
-      }}
-    >
-      <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 16 }}>
-        Criar Chamado
-      </Text>
-    </TouchableOpacity>
-  </View>
-
-</SafeAreaView>
+      {/* BOTÃO NO RODAPÉ */}
+      <View style={{ padding: 20, backgroundColor: "#f2f2f2" }}>
+        <TouchableOpacity
+          onPress={create}
+          style={{
+            backgroundColor: "#4CAF50",
+            padding: 14,
+            borderRadius: 8,
+            alignItems: "center",
+          }}
+        >
+          <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 16 }}>
+            Criar Chamado
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
   );
 }

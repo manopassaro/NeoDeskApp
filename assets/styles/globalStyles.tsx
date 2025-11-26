@@ -3,19 +3,18 @@ import { scale, verticalScale, moderateScale } from "react-native-size-matters";
 
 // cores NeoDesk
 export const colors = {
-    cinzaFundo: 'grey',
-    azulBotoes: '#007bff',   
-}
+  cinzaFundo: "grey",
+  azulBotoes: "#007bff",
+};
 
 // estilos que poderão ser compartilhados
 
 export const globalStyles = StyleSheet.create({
-
   // View
 
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
     backgroundColor: "#f2f2f2",
     marginTop: scale(1),
   },
@@ -28,19 +27,19 @@ export const globalStyles = StyleSheet.create({
 
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#070707ff',
-    textAlign: 'center',
-     marginBottom: 14, // Espaço abaixo do título
+    fontWeight: "bold",
+    color: "#070707ff",
+    textAlign: "center",
+    marginBottom: 14, // Espaço abaixo do título
   },
 
   // Botão padrão
 
   button: {
-    backgroundColor: '#007bff', 
+    backgroundColor: "#007bff",
     paddingVertical: 12,
     borderRadius: 8,
-    alignItems: 'center', // Centraliza o texto
+    alignItems: "center", // Centraliza o texto
     marginTop: 16, // Espaço acima do botão
   },
 
@@ -57,7 +56,7 @@ export const globalStyles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-  
+
   back: {
     padding: 10,
     borderRadius: 12,
@@ -67,12 +66,12 @@ export const globalStyles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowRadius: 2,
     elevation: 2,
-  }, 
+  },
 
   buttonText: {
-    color: '#fff', 
+    color: "#fff",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 
   // Chamados

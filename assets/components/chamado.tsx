@@ -1,4 +1,12 @@
-import { View, ScrollView, ScrollViewProps, Pressable, PressableProps, Text, TouchableOpacity } from "react-native";
+import {
+  View,
+  ScrollView,
+  ScrollViewProps,
+  Pressable,
+  PressableProps,
+  Text,
+  TouchableOpacity,
+} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { scale, verticalScale } from "react-native-size-matters";
 import { Ionicons } from "@expo/vector-icons";
@@ -6,18 +14,18 @@ import { useState, useEffect } from "react";
 import { useRouter, useLocalSearchParams } from "expo-router";
 
 import { globalStyles } from "../../assets/styles/globalStyles";
-import { useChamadoDatabase } from "../../services/chamadoDb"
+import { useChamadoDatabase } from "../../services/chamadoDb";
 
 type PropsP = PressableProps & {
-    data:{
-        id: number
-        titulo: string
-        descricao: string
-        status: string
-        usuario_id: number
-        // usuario_tipo: string
-    }
-}
+  data: {
+    id: number;
+    titulo: string;
+    descricao: string;
+    status: string;
+    usuario_id: number;
+    // usuario_tipo: string
+  };
+};
 
 type PropsS = ScrollViewProps & {
   data: {
@@ -38,8 +46,6 @@ type PropsS = ScrollViewProps & {
   onDelete?: () => void;
 };
 
-
-
 export function Chamados({ data, user, ...rest }: PropsS) {
   const router = useRouter();
 
@@ -52,9 +58,11 @@ export function Chamados({ data, user, ...rest }: PropsS) {
   }
 
   const prioridadeCor =
-    data.prioridade === 3 ? "#dc2626"
-    : data.prioridade === 2 ? "#facc15"
-    : "#22c55e";
+    data.prioridade === 3
+      ? "#dc2626"
+      : data.prioridade === 2
+      ? "#facc15"
+      : "#22c55e";
 
   function handlePress() {
     router.push({
@@ -69,18 +77,23 @@ export function Chamados({ data, user, ...rest }: PropsS) {
       onPress={handlePress}
       style={({ pressed }) => [
         globalStyles.containerChamado,
-        pressed && globalStyles.pressed
+        pressed && globalStyles.pressed,
       ]}
     >
       <View style={globalStyles.card}>
-        
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <Text style={globalStyles.titleChamado} numberOfLines={1}>
             {data.titulo}
           </Text>
         </View>
 
-        <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 6 }}>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginTop: 6,
+          }}
+        >
           <Text
             style={[
               globalStyles.status,
@@ -96,69 +109,73 @@ export function Chamados({ data, user, ...rest }: PropsS) {
             {data.prioridade} Prioridade
           </Text>
         </View>
-
       </View>
     </Pressable>
   );
 }
 
-export function Chamado({data, ...rest}: PropsS){
+export function Chamado({ data, ...rest }: PropsS) {
   const router = useRouter();
   const params = useLocalSearchParams();
   const ChamadoDatabase = useChamadoDatabase();
 
-    function InfoRow({
-  icon,
-  label,
-  value,
-  valueColor = "#333",
-}: {
-  icon: keyof typeof Ionicons.glyphMap;
-  label: string;
-  value: string;
-  valueColor?: string;
-}) {
-  return (
-    <View
-      style={{
-        flexDirection: "row",
-        alignItems: "center",
-        marginBottom: verticalScale(10),
-      }}
-    >
-      <Ionicons name={icon} size={20} color="#686868" style={{ marginRight: scale(10) }} />
-      <Text style={{ fontSize: 15, color: "#555", flex: 1 }}>{label}:</Text>
-      <Text
+  function InfoRow({
+    icon,
+    label,
+    value,
+    valueColor = "#333",
+  }: {
+    icon: keyof typeof Ionicons.glyphMap;
+    label: string;
+    value: string;
+    valueColor?: string;
+  }) {
+    return (
+      <View
         style={{
-          fontSize: 15,
-          fontWeight: "600",
-          color: valueColor,
+          flexDirection: "row",
+          alignItems: "center",
+          marginBottom: verticalScale(10),
         }}
       >
-        {value}
-      </Text>
-    </View>
-  );
-}
-    // console.log(data.usuarioNome)
+        <Ionicons
+          name={icon}
+          size={20}
+          color="#686868"
+          style={{ marginRight: scale(10) }}
+        />
+        <Text style={{ fontSize: 15, color: "#555", flex: 1 }}>{label}:</Text>
+        <Text
+          style={{
+            fontSize: 15,
+            fontWeight: "600",
+            color: valueColor,
+          }}
+        >
+          {value}
+        </Text>
+      </View>
+    );
+  }
+  // console.log(data.usuarioNome)
 
-    async function excluirChamado() {
+  async function excluirChamado() {
     try {
-        const resultado = await ChamadoDatabase.remove(data.id);
+      const resultado = await ChamadoDatabase.remove(data.id);
 
-        if (resultado.success) {
-            // alert("Chamado excluído com sucesso!");
-            router.back();
-            if (rest.onDelete) rest.onDelete();
-        } else {
-            alert("Erro: o chamado não foi excluído.");
-        }
+      if (resultado.success) {
+        // alert("Chamado excluído com sucesso!");
+        router.back();
+        if (rest.onDelete) rest.onDelete();
+      } else {
+        alert("Erro: o chamado não foi excluído.");
+      }
     } catch (err) {
-        console.log("Erro ao excluir:", err);
+      console.log("Erro ao excluir:", err);
     }
-}
+  }
 
-    return (
+  return (
     <ScrollView
       style={{ flex: 1, backgroundColor: "#fff" }}
       contentContainerStyle={{
@@ -197,28 +214,33 @@ export function Chamado({data, ...rest}: PropsS){
           label="Usuário"
           value={data.usuarioNome ?? "Não atribuído"}
         />
-        <InfoRow icon="flag-outline" label="Prioridade" value={String(data.prioridade ?? "Baixa")} />
+        <InfoRow
+          icon="flag-outline"
+          label="Prioridade"
+          value={String(data.prioridade ?? "Baixa")}
+        />
         <InfoRow
           icon="information-circle-outline"
           label="Status"
           value={data.status.toUpperCase()}
           valueColor={data.status === "ABERTO" ? "#2e7d32" : "#d32f2f"}
         />
-        <TouchableOpacity 
-                  onPress={excluirChamado}
-                  style={{
-                    padding: 8,
-                    borderRadius: 8,
-                    backgroundColor: "#ef4444",
-                    marginTop: 10,
-                   }}
-                >
-                  <Text style={{ color: "white", fontWeight: "bold", textAlign: "center" }}>
-                    Excluir
-                  </Text>
-                </TouchableOpacity>
+        <TouchableOpacity
+          onPress={excluirChamado}
+          style={{
+            padding: 8,
+            borderRadius: 8,
+            backgroundColor: "#ef4444",
+            marginTop: 10,
+          }}
+        >
+          <Text
+            style={{ color: "white", fontWeight: "bold", textAlign: "center" }}
+          >
+            Excluir
+          </Text>
+        </TouchableOpacity>
       </View>
-
 
       {/* Descrição */}
       <View
@@ -250,7 +272,6 @@ export function Chamado({data, ...rest}: PropsS){
         >
           {data.descricao}
         </Text>
-        
       </View>
     </ScrollView>
   );

@@ -9,7 +9,13 @@ type Props = {
   autoCapitalize?: "none" | "sentences" | "words" | "characters";
 };
 
-export default function CustomInput({ placeholder, value, onChangeText, secureTextEntry, autoCapitalize = "none" }: Props) {
+export default function CustomInput({
+  placeholder,
+  value,
+  onChangeText,
+  secureTextEntry,
+  autoCapitalize = "none",
+}: Props) {
   return (
     <TextInput
       placeholder={placeholder}

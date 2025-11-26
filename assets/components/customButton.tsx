@@ -19,7 +19,9 @@ export default function CustomButton({ title, onPress }: Props) {
         marginVertical: 8,
       }}
     >
-      <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 16 }}>{title}</Text>
+      <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 16 }}>
+        {title}
+      </Text>
     </TouchableOpacity>
   );
 }

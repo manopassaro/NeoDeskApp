@@ -8,7 +8,11 @@ type Props = {
   items: { label: string; value: string | number }[];
 };
 
-export default function CustomPicker({ selectedValue, onValueChange, items }: Props) {
+export default function CustomPicker({
+  selectedValue,
+  onValueChange,
+  items,
+}: Props) {
   return (
     <View
       style={{

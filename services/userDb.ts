@@ -16,7 +16,7 @@ export function useUserDatabase() {
   const router = useRouter();
 
   // Criar usuário (para cadastro inicial)
-  async function createUser(data: Omit<UserDatabase, "id" >) {
+  async function createUser(data: Omit<UserDatabase, "id">) {
     const statement = await database.prepareAsync(
       `INSERT INTO usuarios (nome, email, senha, tipo_usuario, is_active)
        VALUES ($nome, $email, $senha, $tipo_usuario, $is_active)`
@@ -58,96 +58,98 @@ export function useUserDatabase() {
   // Função de login
   async function login(data: Omit<UserDatabase, "id">) {
     try {
-    // busca o usuário pelo email
-    const query = `
+      // busca o usuário pelo email
+      const query = `
       SELECT * FROM usuarios
       WHERE email = ?
       LIMIT 1;
     `;
 
-    const user = await database.getFirstAsync<UserDatabase>(query, [data.email]);
+      const user = await database.getFirstAsync<UserDatabase>(query, [data.email]);
 
-    // usuário existe?
-    if (!user) {
-      throw new Error("Usuário não encontrado");
+      // usuário existe?
+      if (!user) {
+        throw new Error("Usuário não encontrado");
+      }
+
+      // usuário tá ativo?
+      if (user.is_active !== 1) {
+        throw new Error("Usuário inativo");
+      }
+
+      // senha correta?
+      if (user.senha !== data.senha) {
+        throw new Error("Senha incorreta");
+      }
+
+      // ok...
+      console.log("Login bem-sucedido:", user);
+      return user;
+
+    } catch (error: any) {
+      // tratamento de erros
+      console.log("Erro no login:", error.message);
+
+      // Você pode optar por lançar o erro novamente para tratar no front
+      throw error;
     }
-
-    // usuário tá ativo?
-    if (user.is_active !== 1) {
-      throw new Error("Usuário inativo");
-    }
-
-    // senha correta?
-    if (user.senha !== data.senha) {
-      throw new Error("Senha incorreta");
-    }
-
-    // ok...
-    console.log("Login bem-sucedido:", user);
-    return user;
-
-  } catch (error: any) {
-    // tratamento de erros
-    console.log("Erro no login:", error.message);
-
-    // Você pode optar por lançar o erro novamente para tratar no front
-    throw error;
-  }
 
   }
 
   async function getUserById(id: number) {
-    
+
     try {
-      const query = "SELECT * FROM usuarios WHERE id = ? LIMIT 1"  
+      const query = "SELECT * FROM usuarios WHERE id = ? LIMIT 1"
       const statement = await database.getAllAsync(query, [id]);
       const user = statement[0]
       // console.log("user"+user);
-      return user; 
-    } catch(error) {
-            throw error
-      }
+      return user;
+    } catch (error) {
+      throw error
+    }
   }
 
   async function deleteUser(id: number) {
-  try {
-    const statement = await database.prepareAsync(
-      `DELETE FROM usuarios WHERE id = $id`
-    );
+    try {
+      const statement = await database.prepareAsync(
+        `DELETE FROM usuarios WHERE id = $id`
+      );
 
-    await statement.executeAsync({ $id: id });
-    await statement.finalizeAsync();
+      await statement.executeAsync({ $id: id });
+      await statement.finalizeAsync();
 
-    return true;
-  } catch (error) {
-    console.error("Erro ao excluir usuário:", error);
-    return false;
+      return true;
+    } catch (error) {
+      console.error("Erro ao excluir usuário:", error);
+      return false;
+    }
   }
-}
 
   async function updateUserStatus(id: number, newStatus: number) {
-  try {
-    const statement = await database.prepareAsync(
-      `UPDATE usuarios SET is_active = $status WHERE id = $id`
-    );
+    try {
+      const statement = await database.prepareAsync(
+        `UPDATE usuarios SET is_active = $status WHERE id = $id`
+      );
 
-    await statement.executeAsync({
-      $status: newStatus,
-      $id: id,
-    });
+      await statement.executeAsync({
+        $status: newStatus,
+        $id: id,
+      });
 
-    await statement.finalizeAsync();
-    return true;
-  } catch (error) {
-    console.error("Erro ao atualizar status:", error);
-    return false;
+      await statement.finalizeAsync();
+      return true;
+    } catch (error) {
+      console.error("Erro ao atualizar status:", error);
+      return false;
+    }
   }
-}
 
-  return { createUser, 
-    login, 
-    getAllUsers, 
-    getUserById, 
+  return {
+    createUser,
+    login,
+    getAllUsers,
+    getUserById,
     deleteUser,
-    updateUserStatus };
+    updateUserStatus
+  };
 }
